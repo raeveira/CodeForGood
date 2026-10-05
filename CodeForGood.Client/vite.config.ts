@@ -8,4 +8,12 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    proxy: {
+      '/weatherforecast': {
+        target: 'http://localhost:5036', // <- move to env later
+        changeOrigin: true,
+      },
+    },
+  },
 })
