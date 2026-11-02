@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/Frontend/">
-    <Project Path="Frontend/CodeForGoodSalesToDev.csproj" />
+    <Project Path="Frontend/Frontend.csproj" />
   </Folder>
   <Project Path="Application/Application.csproj" />
   <Project Path="Domain/Domain.csproj" />
