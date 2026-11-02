@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="CodeForGoodSalesToDev/CodeForGoodSalesToDev.csproj" />
+  <Folder Name="/Frontend/">
+    <Project Path="Frontend/CodeForGoodSalesToDev.csproj" />
+  </Folder>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
 </Solution>
