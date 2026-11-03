@@ -3,17 +3,57 @@
     
 }
 
-
-
 <main class="HomeMain">
-    <div class="HomeContent">
+    <div class="Sidebar">
         @if (User.IsInRole("Sales"))
         {
-            <h2>Sales Environment</h2>
+            <h3>Sales Environment</h3>
         }
         else if (User.IsInRole("Developer"))
         {
-            <h2>Developer Environment</h2>
+            <h3>Developer Environment</h3>
         }
+
+        <div class="DealHeader">
+            <h2>Deals</h2>
+            
+            @if (User.IsInRole("Sales"))
+            {
+                <button class="AddDealBtn">
+                    <img src="~/images/Plus.svg" alt="Add Deal" style="height: 16px;" />
+                </button>
+            }
+        </div>
+            
+        <div class="Divider"></div>
+        
+        @* Deals Cards *@
+        <div class="DealsCards">
+            @* Individual deal cards will go here *@
+
+            @* Example deal card *@
+            <div class="DealCard">
+                <div class="DealHeading">
+                    <div class="DealHeadingLeft">
+                        <h4>Deal Title</h4>
+                        <p>Deal Customer</p>
+                    </div>
+                    
+                    <div class="DealHeadingRight">
+                        <p>Deal Status</p>
+                    </div>
+                </div>
+            
+                <div class="Divider"></div>
+                
+                <p class="DealBodyHeading">Verwachte projectperiode</p>
+                <p class="DealBodyDates">Start Date - End Date</p>
+            </div>
+        </div>
     </div>
+
+    <div class="HomeContent">
+        
+    </div>
+    
 </main>

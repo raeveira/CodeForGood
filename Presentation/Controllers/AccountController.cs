@@ -25,7 +25,7 @@ namespace Presentation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username)
         {
-            string? role = username?.ToLower() switch
+            string? role = username.ToLower() switch
             {
                 "sales" => "Sales",
                 "developer" => "Developer",
