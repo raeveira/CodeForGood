@@ -1,5 +1,3 @@
-@model Application.Deals.DealDto
-
 @{
     // TODO: replace mock data with real requirements and messages
     var requirementsOfDeal = new[]
@@ -22,7 +20,7 @@
         [],
     };
 
-    bool hasValidRequirementParameter = int.TryParse(Context.Request.Query["requirement"], out var requestedRequirementIndex)
+    bool hasValidRequirementParameter = int.TryParse(Context.Request.Query[key: "requirement"], out int requestedRequirementIndex)
         && requestedRequirementIndex >= 0
         && requestedRequirementIndex < requirementsOfDeal.Length;
     int selectedRequirementIndex = hasValidRequirementParameter ? requestedRequirementIndex : 0;
@@ -54,7 +52,7 @@
                     <div class="ChatMessage">
                         <div class="MessageHeader">
                             <strong>@chatMessage.Author</strong>
-                            <time datetime="@chatMessage.SentAt.ToString("s")">@chatMessage.SentAt.ToString("dd MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)</time>
+                            <time datetime="@chatMessage.SentAt.ToString(format: "s")">@chatMessage.SentAt.ToString("dd MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)</time>
                         </div>
                         <p>@chatMessage.Text</p>
                     </div>
@@ -65,7 +63,7 @@
                 }
             </div>
             <div class="InputField">
-                <textarea rows="1" placeholder="Type a message..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <textarea rows="1" placeholder="Type a message..." oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"></textarea>
                 <button type="button">Send</button>
             </div>
         </div>
@@ -93,7 +91,7 @@
             <div class="DealRequirementList">
                 <strong>Requirements:</strong>
 
-                @for (var requirementIndex = 0; requirementIndex < requirementsOfDeal.Length; requirementIndex++)
+                @for (int requirementIndex = 0; requirementIndex < requirementsOfDeal.Length; requirementIndex++)
                 {
                     var requirement = requirementsOfDeal[requirementIndex];
                     <a href="?id=@Model.Id&requirement=@requirementIndex" class="RequirementCard @(requirementIndex == selectedRequirementIndex ? "Selected" : "")">
@@ -105,7 +103,7 @@
                         </div>
                         <div class="RequirementDivider"></div>
                         <p class="RequirementModulesHeading">Module(s)</p>
-                        <p class="RequirementModules">@string.Join(", ", requirement.Modules)</p>
+                        <p class="RequirementModules">@string.Join(separator: ", ", requirement.Modules)</p>
                     </a>
                 }
             </div>
