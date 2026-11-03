@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "Code for Good - Login";
+}
+
+@* Main Body *@
+<main class="LoginMain">
+    <div class="LoginModal">
+        <h2 class="LoginHeading">Welcome Back</h2>
+        <p class="LoginSubheading">Please log in to continue.</p>
+        <form method="post" asp-controller="Account" asp-action="Login" class="LoginForm">
+            <span class="LoginUsernameLabel">Role:</span>
+            <div class="LoginUsernameGroup">
+                <input type="radio" id="user-sales" name="username" value="sales" checked />
+                <label for="user-sales">Sales</label>
+                <input type="radio" id="user-developer" name="username" value="developer" />
+                <label for="user-developer">Developer</label>
+            </div>
+            <label for="password" class="LoginPasswordLabel">Password:</label>
+            <input type="password" id="password" name="password" class="LoginPasswordInput" disabled />
+            <button type="submit" class="LoginButton">Log In</button>
+        </form>
+    </div>
+</main>

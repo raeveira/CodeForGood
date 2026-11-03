@@ -1,8 +1,16 @@
 using Application;
 using Infrastructure;
 using Domain;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        o.LoginPath = "/login";
+        o.AccessDeniedPath = "/access-denied";
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -23,6 +31,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -32,5 +41,9 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapControllerRoute(
+    name: "login",
+    pattern: "{controller=Login}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.Run();

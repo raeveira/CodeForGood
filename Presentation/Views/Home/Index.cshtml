@@ -1,7 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Code for Good - Home";
+    
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-</div>
+
+
+<main class="HomeMain">
+    <div class="HomeContent">
+        @if (User.IsInRole("Sales"))
+        {
+            <h2>Sales Environment</h2>
+        }
+        else if (User.IsInRole("Developer"))
+        {
+            <h2>Developer Environment</h2>
+        }
+    </div>
+</main>
