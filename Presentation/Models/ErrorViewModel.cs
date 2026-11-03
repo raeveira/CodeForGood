@@ -1,4 +1,4 @@
-namespace CodeForGoodSalesToDev.Models;
+namespace Presentation.Models;
 
 public class ErrorViewModel
 {

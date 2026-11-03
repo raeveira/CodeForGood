@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddDomain();
 
 var app = builder.Build();
 
