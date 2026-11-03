@@ -6,4 +6,5 @@ public sealed record DealDto(
     string Customer,
     string Status,
     string Description,
-    DateOnly EndDate);
+    DateOnly EndDate
+);

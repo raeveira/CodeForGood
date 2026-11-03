@@ -1,15 +1,127 @@
 @model Application.Deals.DealDto
 
-<h2>@Model.Title</h2>
-<p>@Model.Customer</p>
-<p>@Model.Status</p>
-<h4>Description</h4>
-<p>@Model.Description</p>
-<h4>Expected end date</h4>
-<p>@Model.EndDate.ToString("dd-MM-yyyy")</p>
+@{
+    // TODO: replace mock data with real requirements and messages
+    var requirementsOfDeal = new[]
+    {
+        (Title: "Requirement 1", Description: "Description 1", Type: "Functional", Priority: "High", Modules: new[] { "Module 1", "Module 2" }),
+        (Title: "Requirement 2", Description: "Description 2", Type: "Technical", Priority: "Medium", Modules: new[] { "Module 3" }),
+        (Title: "Requirement 3", Description: "Description 3", Type: "Functional", Priority: "Low", Modules: new[] { "Module 1", "Module 3" }),
+    };
 
-@if (User.IsInRole("Sales"))
-{
-    <button type="button">Edit</button>
-    <button type="button">Delete</button>
+    var messagesPerRequirement = new (string Author, DateTime SentAt, string Text)[][]
+    {
+        [
+            ("Developer", new DateTime(2025, 2, 10, 9, 15, 0), "Hello, I have a question about this requirement."),
+            ("Developer", new DateTime(2025, 2, 10, 9, 22, 0), "Can you provide more details about the timeline?"),
+            ("Sales", new DateTime(2025, 2, 10, 10, 3, 0), "Sure, the timeline is expected to be 3 months."),
+        ],
+        [
+            ("Sales", new DateTime(2025, 2, 11, 14, 0, 0), "The customer wants this to integrate with their existing API."),
+        ],
+        [],
+    };
+
+    bool hasValidRequirementParameter = int.TryParse(Context.Request.Query["requirement"], out var requestedRequirementIndex)
+        && requestedRequirementIndex >= 0
+        && requestedRequirementIndex < requirementsOfDeal.Length;
+    int selectedRequirementIndex = hasValidRequirementParameter ? requestedRequirementIndex : 0;
+    var selectedRequirement = requirementsOfDeal[selectedRequirementIndex];
+    var selectedMessages = messagesPerRequirement[selectedRequirementIndex];
 }
+
+<div class="DealDetails">
+    <div class="DealTitle">
+        <h2>@Model.Title</h2>
+        @if (User.IsInRole("Sales"))
+        {
+            <div class="DealActions">
+                <button type="button">Edit</button>
+                <button type="button" style="color: red;;">Delete</button>
+            </div>
+        }
+    </div>
+
+    <div class="DealInner">
+        <div class="DealChat">
+            <div class="ThreadHeader">
+                <strong>@selectedRequirement.Title</strong>
+                <span>@selectedRequirement.Description</span>
+            </div>
+            <div class="MessageList">
+                @foreach (var chatMessage in selectedMessages)
+                {
+                    <div class="ChatMessage">
+                        <div class="MessageHeader">
+                            <strong>@chatMessage.Author</strong>
+                            <time datetime="@chatMessage.SentAt.ToString("s")">@chatMessage.SentAt.ToString("dd MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)</time>
+                        </div>
+                        <p>@chatMessage.Text</p>
+                    </div>
+                }
+                @if (selectedMessages.Length == 0)
+                {
+                    <p class="EmptyThread">No messages yet for this requirement.</p>
+                }
+            </div>
+            <div class="InputField">
+                <textarea rows="1" placeholder="Type a message..." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                <button type="button">Send</button>
+            </div>
+        </div>
+
+        <div class="DealInfo">
+            <div class="ExtraInfo">
+                <p><strong>Status:</strong> @Model.Status</p>
+                <p><strong>Expected end date:</strong> @Model.EndDate.ToString("dd-MM-yyyy")</p>
+            </div>
+            
+            <div class="Divider"></div>
+            <div class="CustomerName">
+                <strong>Customer:</strong>
+                <p>@Model.Customer</p>
+            </div>
+        
+            <div class="Divider"></div>
+            
+            <div class="DealDescription">
+                <strong>Description:</strong>
+                <p>@Model.Description</p>
+            </div>
+            
+            <div class="Divider"></div>
+            <div class="DealRequirementList">
+                <strong>Requirements:</strong>
+
+                @for (var requirementIndex = 0; requirementIndex < requirementsOfDeal.Length; requirementIndex++)
+                {
+                    var requirement = requirementsOfDeal[requirementIndex];
+                    <a href="?id=@Model.Id&requirement=@requirementIndex" class="RequirementCard @(requirementIndex == selectedRequirementIndex ? "Selected" : "")">
+                        <p class="RequirementTitle">@requirement.Title</p>
+                        <p class="RequirementDescription">@requirement.Description</p>
+                        <div class="RequirementPills">
+                            <div class="RequirementPill">@requirement.Type</div>
+                            <div class="RequirementPill">@requirement.Priority</div>
+                        </div>
+                        <div class="RequirementDivider"></div>
+                        <p class="RequirementModulesHeading">Module(s)</p>
+                        <p class="RequirementModules">@string.Join(", ", requirement.Modules)</p>
+                    </a>
+                }
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const requirementList = document.querySelector('.DealRequirementList');
+            if (!requirementList) return;
+            const updateTopFade = () => requirementList.style.setProperty('--fade-top', requirementList.scrollTop > 0 ? '3rem' : '0px');
+            requirementList.addEventListener('scroll', updateTopFade, { passive: true });
+            updateTopFade();
+        })();
+    </script>
+</div>
+
+
