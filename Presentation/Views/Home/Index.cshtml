@@ -1,3 +1,4 @@
+@model HomeViewModel
 @{
     ViewData["Title"] = "Code for Good - Home";
     
@@ -29,30 +30,39 @@
         
         @* Deals Cards *@
         <div class="DealsCards">
-            @* Individual deal cards will go here *@
+            @foreach (var deal in Model.Deals)
+            {
+                <a asp-action="Index" asp-route-id="@deal.Id" class="DealCard @(deal.Id == Model.Selected?.Id ? "Selected" : "")">
+                    <div class="DealHeading">
+                        <div class="DealHeadingLeft">
+                            <h4>@deal.Title</h4>
+                            <p>@deal.Customer</p>
+                        </div>
 
-            @* Example deal card *@
-            <div class="DealCard">
-                <div class="DealHeading">
-                    <div class="DealHeadingLeft">
-                        <h4>Deal Title</h4>
-                        <p>Deal Customer</p>
+                        <div class="DealHeadingRight">
+                            <p>@deal.Status</p>
+                        </div>
                     </div>
-                    
-                    <div class="DealHeadingRight">
-                        <p>Deal Status</p>
-                    </div>
-                </div>
-            
-                <div class="Divider"></div>
-                
-                <p class="DealBodyHeading">Estimated End Date</p>
-                <p class="DealBodyDates">End Date</p>
-            </div>
+
+                    <div class="Divider"></div>
+
+                    <p class="DealBodyHeading">Expected end date</p>
+                    <p class="DealBodyDates">@deal.EndDate.ToString("dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+                </a>
+            }
         </div>
     </div>
 
     <div class="HomeContent">
+        @if (Model.Selected is null)
+        {
+            <p>No deal selected.</p>
+        }
+        
+        @if (Model.Selected is not null) 
+        { 
+            <partial name="_DealDetails" model="Model.Selected" /> 
+        }
         
     </div>
     

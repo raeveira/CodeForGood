@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Application.Deals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
@@ -8,9 +9,17 @@ namespace Presentation.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly IDealService _deals;
+
+    public HomeController(IDealService deals)
     {
-        return View();
+        _deals = deals;
+    }
+
+    public IActionResult Index(int? id)
+    {
+        DealDto? selected = id is null ? null : _deals.GetById(id.Value);
+        return View(new HomeViewModel(_deals.GetAll(), selected));
     }
 
     [AllowAnonymous]

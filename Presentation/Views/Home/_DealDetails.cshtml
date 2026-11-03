@@ -1,0 +1,15 @@
+@model Application.Deals.DealDto
+
+<h2>@Model.Title</h2>
+<p>@Model.Customer</p>
+<p>@Model.Status</p>
+<h4>Description</h4>
+<p>@Model.Description</p>
+<h4>Expected end date</h4>
+<p>@Model.EndDate.ToString("dd-MM-yyyy")</p>
+
+@if (User.IsInRole("Sales"))
+{
+    <button type="button">Edit</button>
+    <button type="button">Delete</button>
+}
