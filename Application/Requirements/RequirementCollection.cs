@@ -4,13 +4,13 @@ namespace Application.Requirements;
 
 internal sealed class RequirementCollection(IRequirementRepository requirementRepository) : IRequirementCollection
 {
-    public IReadOnlyList<RequirementDtoResponse> GetRequirementsForDeal(Guid dealId)
+    public IReadOnlyList<RequirementResponseDto> GetRequirementsForDeal(Guid dealId)
     {
         IReadOnlyList<Requirement> requirements = requirementRepository.GetByDealId(dealId);
         return requirements.Select(ConvertToDto).ToList();
     }
 
-    public RequirementDtoResponse? GetRequirementById(Guid requirementId)
+    public RequirementResponseDto? GetRequirementById(Guid requirementId)
     {
         Requirement? requirement = requirementRepository.GetById(requirementId);
         return requirement is null ? null : ConvertToDto(requirement);
@@ -41,7 +41,7 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
         requirementRepository.Remove(requirement);
     }
 
-    private static RequirementDtoResponse ConvertToDto(Requirement requirement)
+    private static RequirementResponseDto ConvertToDto(Requirement requirement)
     {
         string typeDisplay = requirement.Type switch
         {
@@ -59,7 +59,7 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
             _ => requirement.Priority.ToString()
         };
 
-        return new RequirementDtoResponse(
+        return new RequirementResponseDto(
             requirement.Id,
             requirement.DealId,
             requirement.Title,

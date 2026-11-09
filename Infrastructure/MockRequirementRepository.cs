@@ -1,5 +1,6 @@
 using Application;
 using Application.Requirements;
+using Application.Deals;
 
 namespace Infrastructure;
 
@@ -10,38 +11,67 @@ public class MockRequirementRepository : IRequirementRepository
     private static List<Requirement> InitializeMockRequirements()
     {
         List<Requirement> mockRequirements = new();
+        IDealRepository dealRepository = new MockDealRepository();
+        IReadOnlyList<Deal> deals = dealRepository.GetAll();
+        
+        Random random = new Random();
 
-        Guid dealId = Guid.NewGuid();
+        string[] requirementTitles = 
+        {
+            "Payment Integration",
+            "User Authentication",
+            "Database Migration",
+            "API Documentation",
+            "Performance Optimization",
+            "Security Audit",
+            "Mobile Responsiveness",
+            "Search Functionality"
+        };
 
-        Requirement requirement1 = Requirement.Create(
-            dealId,
-            "Requirement 1",
-            "Description 1",
-            ERequirementType.Functional,
-            ERequirementPriority.High,
-            new List<string> { "Module 1", "Module 2" }
-        );
-        mockRequirements.Add(requirement1);
+        string[] requirementDescriptions =
+        {
+            "Integrate payment gateway for online transactions",
+            "Implement secure user login and registration",
+            "Migrate data from legacy system to new database",
+            "Create comprehensive API documentation",
+            "Optimize database queries and response times",
+            "Conduct security vulnerability assessment",
+            "Ensure application works on all devices",
+            "Add full-text search capabilities"
+        };
 
-        Requirement requirement2 = Requirement.Create(
-            dealId,
-            "Requirement 2",
-            "Description 2",
-            ERequirementType.Technical,
-            ERequirementPriority.Medium,
-            new List<string> { "Module 3" }
-        );
-        mockRequirements.Add(requirement2);
+        ERequirementType[] types = { ERequirementType.Functional, ERequirementType.Technical };
+        ERequirementPriority[] priorities = { ERequirementPriority.High, ERequirementPriority.Medium, ERequirementPriority.Low };
 
-        Requirement requirement3 = Requirement.Create(
-            dealId,
-            "Requirement 3",
-            "Description 3",
-            ERequirementType.Functional,
-            ERequirementPriority.Low,
-            new List<string> { "Module 1", "Module 3" }
-        );
-        mockRequirements.Add(requirement3);
+        string[] modules = { "Module 1", "Module 2", "Module 3", "Module 4", "Module 5" };
+
+        for (int index = 0; index < 12; index++)
+        {
+            Guid randomDealId = deals[random.Next(deals.Count)].Id;
+            ERequirementType randomType = types[random.Next(types.Length)];
+            ERequirementPriority randomPriority = priorities[random.Next(priorities.Length)];
+            
+            int moduleCount = random.Next(1, 4);
+            List<string> selectedModules = new();
+            for (int moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++)
+            {
+                string selectedModule = modules[random.Next(modules.Length)];
+                if (!selectedModules.Contains(selectedModule))
+                {
+                    selectedModules.Add(selectedModule);
+                }
+            }
+
+            Requirement requirement = Requirement.Create(
+                randomDealId,
+                requirementTitles[index % requirementTitles.Length],
+                requirementDescriptions[index % requirementDescriptions.Length],
+                randomType,
+                randomPriority,
+                selectedModules
+            );
+            mockRequirements.Add(requirement);
+        }
 
         return mockRequirements;
     }

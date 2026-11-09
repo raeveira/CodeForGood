@@ -1,7 +1,6 @@
 @model HomeViewModel
 @{
     ViewData["Title"] = "Code for Good - Home";
-    
 }
 
 <main class="HomeMain">
@@ -32,7 +31,7 @@
         <div class="DealsCards">
             @foreach (var deal in Model.Deals)
             {
-                <a asp-action="Index" asp-route-id="@deal.Id" class="DealCard @(deal.Id == Model.Selected?.Id ? "Selected" : "")">
+                <a asp-action="Index" asp-route-dealId="@deal.Id" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "")">
                     <div class="DealHeading">
                         <div class="DealHeadingLeft">
                             <h4>@deal.Title</h4>
@@ -54,14 +53,14 @@
     </div>
 
     <div class="HomeContent">
-        @if (Model.Selected is null)
+        @if (Model.SelectedDeal is null)
         {
             <p>No deal selected.</p>
         }
         
-        @if (Model.Selected is not null) 
+        @if (Model.SelectedDeal is not null) 
         { 
-            <partial name="_DealDetails" model="Model.Selected" /> 
+            <partial name="_DealDetails" model="new DealDetailsViewModel(Model.SelectedDeal, Model.RequirementsForDeal, Model.SelectedRequirement, Model.MessagesForRequirement)" />
         }
         
     </div>

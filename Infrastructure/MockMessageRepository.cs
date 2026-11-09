@@ -1,5 +1,6 @@
 using Application;
 using Application.Messages;
+using Application.Requirements;
 
 namespace Infrastructure;
 
@@ -10,21 +11,44 @@ public class MockMessageRepository : IMessageRepository
     private static List<Message> InitializeMockMessages()
     {
         List<Message> mockMessages = new();
+        IRequirementRepository requirementRepository = new MockRequirementRepository();
+        IReadOnlyList<Requirement> requirements = requirementRepository.GetAll();
 
-        Guid requirement1Id = Guid.NewGuid();
-        Guid requirement2Id = Guid.NewGuid();
+        Random random = new Random();
 
-        Message message1 = Message.Create(requirement1Id, "Developer", "Hello, I have a question about this requirement.");
-        mockMessages.Add(message1);
+        string[] senderNames = { "Developer", "Sales" };
 
-        Message message2 = Message.Create(requirement1Id, "Developer", "Can you provide more details about the timeline?");
-        mockMessages.Add(message2);
+        string[] messageTexts =
+        {
+            "Hello, I have a question about this requirement.",
+            "Can you provide more details about the timeline?",
+            "Sure, the timeline is expected to be 3 months.",
+            "The customer wants this to integrate with their existing API.",
+            "I need clarification on the acceptance criteria.",
+            "This requirement is ready for implementation.",
+            "We should schedule a meeting to discuss this.",
+            "I've found a potential issue with the current approach.",
+            "Let's prioritize this for the next sprint.",
+            "The design mockups are ready for review.",
+            "I've completed the initial implementation.",
+            "We need to test this more thoroughly before release.",
+            "The customer has approved this requirement.",
+            "I recommend we break this down into smaller tasks.",
+            "This feature is now in production.",
+            "Can we revisit this requirement after the first release?",
+            "The performance metrics are better than expected.",
+            "We should document this for future reference."
+        };
 
-        Message message3 = Message.Create(requirement1Id, "Sales", "Sure, the timeline is expected to be 3 months.");
-        mockMessages.Add(message3);
+        for (int index = 0; index < 25; index++)
+        {
+            Requirement randomRequirement = requirements[random.Next(requirements.Count)];
+            string randomSender = senderNames[random.Next(senderNames.Length)];
+            string randomMessage = messageTexts[random.Next(messageTexts.Length)];
 
-        Message message4 = Message.Create(requirement2Id, "Sales", "The customer wants this to integrate with their existing API.");
-        mockMessages.Add(message4);
+            Message message = Message.Create(randomRequirement.Id, randomSender, randomMessage);
+            mockMessages.Add(message);
+        }
 
         return mockMessages;
     }

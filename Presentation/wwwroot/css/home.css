@@ -1,0 +1,643 @@
+/* LOGIN PAGE STYLES */
+.LoginMain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.LoginModal {
+    background-color: white;
+    padding: 2rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    min-width: 300px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    height: 50%;
+}
+
+.LoginHeading {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    text-align: center;
+}
+
+.LoginSubheading {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+    width: 100%;
+    text-align: center;
+}
+
+.LoginModal .LoginForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+}
+
+.LoginUsernameLabel {
+    font-weight: bold;
+    margin-bottom: -0.5rem;
+}
+
+.LoginUsernameGroup {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.LoginUsernameGroup input {
+    display: none;
+}
+
+.LoginUsernameGroup label {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.LoginUsernameGroup input:checked + label {
+    background-color: #646274;
+    border-color: #646274;
+    color: white;
+}
+
+.LoginPasswordLabel {
+    margin-top: 1rem;
+    font-weight: bold;
+    margin-bottom: -0.5rem;
+}
+
+.LoginPasswordInput {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.LoginPasswordInput:disabled {
+    background-color: #F2F2F2;
+    border: 1px solid #E6E6E6;
+}
+
+.LoginPasswordInput:disabled:hover{
+    cursor: not-allowed;
+}
+
+.LoginButton {
+    margin-top: 2rem;
+    width: 100%;
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #646274;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.LoginButton:hover {
+    background-color: #50505a;
+}
+
+@media screen and (max-width: 768px) {
+    .LoginModal {
+        width: 80%;
+        height: auto;
+    }
+}
+
+/* HOME PAGE STYLES */
+
+.PageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #646274;
+    padding: 0 2rem;
+    height: 70px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.HeaderLogo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.HeaderLogo h1 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.LogoutForm {
+    margin: 0;
+}
+
+.LogoutButton {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.LogoutButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.HomeMain {
+    display: flex;
+    height: calc(100vh - 70px);
+    gap: 0;
+}
+
+.Sidebar {
+    width: 300px;
+    background-color: #FAFAFA;
+    border-right: 1px solid #D9D9D9;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.Sidebar h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.DealHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.DealHeader h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000000;
+}
+
+.AddDealBtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Divider {
+    height: 1px;
+    background-color: #D9D9D9;
+    margin: 1rem 0;
+}
+
+.DealsCards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.DealCard {
+    display: block;
+    padding: 1rem;
+    background-color: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.DealCard:hover {
+    border-color: #BFBFBF;
+    background-color: #F5F5F5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.DealCard.Selected {
+    background-color: #E8F4F8;
+    border-color: #0066CC;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+}
+
+.DealHeading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.DealHeadingLeft h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    color: #000000;
+}
+
+.DealHeadingLeft p {
+    font-size: 0.9rem;
+    color: #666666;
+    margin: 0;
+}
+
+.DealHeadingRight p {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #646274;
+    margin: 0;
+}
+
+.DealBodyHeading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #999999;
+    margin: 0.75rem 0 0.25rem 0;
+}
+
+.DealBodyDates {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+}
+
+.HomeContent {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* DEAL DETAILS STYLES */
+
+.DealDetails {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    gap: 0;
+}
+
+.DealContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid #D9D9D9;
+}
+
+.DealInfo {
+    width: 300px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 1.5rem;
+    border-left: 1px solid #D9D9D9;
+}
+
+.RequirementsListView {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.RequirementsListView h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #000000;
+}
+
+.RequirementsListGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.RequirementCard {
+    display: block;
+    box-sizing: border-box;
+    color: inherit;
+    text-decoration: none;
+    background-color: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.RequirementCard:hover {
+    border-color: #BFBFBF;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #FAFAFA;
+}
+
+.RequirementCard.Selected {
+    background-color: #F0F0F0;
+    border-color: #8C8C8C;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.RequirementTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #000000;
+}
+
+.RequirementDescription {
+    font-size: 0.9rem;
+    color: #000000;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+}
+
+.RequirementPills {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.RequirementPill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 0.6rem 1.2rem;
+    background-color: #646274;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.RequirementModulesHeading {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 0.25rem 0;
+}
+
+.RequirementModules {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #555555;
+    margin: 0;
+}
+
+.BackButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    margin-right: 1rem;
+}
+
+.BackButton:hover {
+    background-color: #F0F0F0;
+}
+
+.DealTitle {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-bottom: 1px solid #D9D9D9;
+    gap: 1rem;
+}
+
+.DealTitle h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #000000;
+}
+
+.RequirementDescriptionSmall {
+    font-size: 0.85rem;
+    color: #99A3B3;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* DEAL CHAT / MESSAGES SECTION */
+
+.DealChat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ThreadHeader {
+    padding: 1rem;
+    background-color: #F5F5F5;
+    border-bottom: 1px solid #D9D9D9;
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.ThreadHeader strong {
+    display: block;
+    color: #000000;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.MessageList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0;
+    background-color: #FAFBFC;
+}
+
+.ChatMessage {
+    padding: 0.75rem 0;
+    border-left: 4px solid #5B6F82;
+    padding-left: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.ChatMessage.FromSales {
+    border-left-color: #FF6B6B;
+}
+
+.ChatMessage.FromDeveloper {
+    border-left-color: #5B6F82;
+}
+
+.ChatMessage:hover {
+    background-color: #F0F2F5;
+}
+
+.MessageHeader {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.35rem;
+    gap: 0.5rem;
+}
+
+.MessageHeader strong {
+    color: #000000;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.MessageHeader time {
+    color: #99A3B3;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.ChatMessage p {
+    margin: 0;
+    color: #36393F;
+    line-height: 1.4;
+    font-size: 0.94rem;
+    word-wrap: break-word;
+}
+
+.EmptyThread {
+    text-align: center;
+    color: #99A3B3;
+    font-style: italic;
+    margin: auto;
+    padding: 2rem;
+    font-size: 0.95rem;
+}
+
+.InputField {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background-color: #F5F5F5;
+    border-top: 1px solid #D9D9D9;
+}
+
+.InputField textarea {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: none;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.InputField textarea:focus {
+    outline: none;
+    border-color: #0066CC;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.InputField button {
+    padding: 0.75rem 1.5rem;
+    background-color: #0066CC;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.InputField button:hover {
+    background-color: #0052A3;
+}
+
+.InputField button:active {
+    background-color: #003D7A;
+}
+
+.ExtraInfo {
+    font-size: 0.9rem;
+}
+
+.ExtraInfo p {
+    margin: 0.5rem 0;
+    color: #333333;
+}
+
+.CustomerName {
+    font-size: 0.9rem;
+}
+
+.CustomerName p {
+    margin: 0.5rem 0 0 0;
+    color: #666666;
+}
+
+.DealDescription {
+    font-size: 0.9rem;
+}
+
+.DealDescription p {
+    margin: 0.5rem 0 0 0;
+    color: #666666;
+    line-height: 1.4;
+}
+
+.RequirementModulesSection {
+    font-size: 0.9rem;
+}
+
+.RequirementModulesSection strong {
+    display: block;
+    color: #000000;
+    margin-bottom: 0.5rem;
+}
+
+.RequirementModulesList {
+    margin: 0;
+    color: #666666;
+    line-height: 1.4;
+}

@@ -1,6 +1,6 @@
 namespace Application.Requirements;
 
-public sealed record RequirementDtoResponse(
+public sealed record RequirementResponseDto(
     Guid Id,
     Guid DealId,
     string Title,

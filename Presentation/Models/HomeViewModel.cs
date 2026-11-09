@@ -1,5 +1,16 @@
 using Application.Deals;
+using Application.Messages;
+using Application.Requirements;
 
 namespace Presentation.Models;
 
-public record HomeViewModel(IReadOnlyList<DealResponseDto> Deals, DealResponseDto? Selected);
+public record HomeViewModel(
+    IReadOnlyList<DealResponseDto> Deals,
+    DealResponseDto? SelectedDeal,
+    IReadOnlyList<RequirementResponseDto> RequirementsForDeal,
+    RequirementResponseDto? SelectedRequirement,
+    IReadOnlyList<MessageResponseDto> MessagesForRequirement
+);
+
+
+

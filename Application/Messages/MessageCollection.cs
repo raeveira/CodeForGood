@@ -2,13 +2,13 @@ namespace Application.Messages;
 
 internal sealed class MessageCollection(IMessageRepository messageRepository) : IMessageCollection
 {
-    public IReadOnlyList<MessageDtoResponse> GetMessagesForRequirement(Guid requirementId)
+    public IReadOnlyList<MessageResponseDto> GetMessagesForRequirement(Guid requirementId)
     {
         IReadOnlyList<Message> messages = messageRepository.GetByRequirementId(requirementId);
         return messages.Select(ConvertToDto).ToList();
     }
 
-    public MessageDtoResponse? GetMessageById(Guid messageId)
+    public MessageResponseDto? GetMessageById(Guid messageId)
     {
         Message? message = messageRepository.GetById(messageId);
         return message is null ? null : ConvertToDto(message);
@@ -39,9 +39,9 @@ internal sealed class MessageCollection(IMessageRepository messageRepository) : 
         messageRepository.Remove(message);
     }
 
-    private static MessageDtoResponse ConvertToDto(Message message)
+    private static MessageResponseDto ConvertToDto(Message message)
     {
-        return new MessageDtoResponse(
+        return new MessageResponseDto(
             message.Id,
             message.RequirementId,
             message.Author,
