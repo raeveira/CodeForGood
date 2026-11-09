@@ -1,6 +1,5 @@
 using Application;
 using Infrastructure;
-using Domain;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +15,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddControllersWithViews();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
-builder.Services.AddDomain();
 
 var app = builder.Build();
 

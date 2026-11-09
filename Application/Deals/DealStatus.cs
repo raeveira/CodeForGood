@@ -1,4 +1,4 @@
-namespace Domain;
+namespace Application.Deals;
 
 public enum DealStatus
 {

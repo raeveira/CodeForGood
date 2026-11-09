@@ -9,16 +9,16 @@ namespace Presentation.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
-    private readonly IDealService _deals;
+    private readonly IDealCollection _deals;
 
-    public HomeController(IDealService deals)
+    public HomeController(IDealCollection deals)
     {
         _deals = deals;
     }
 
-    public IActionResult Index(int? id)
+    public IActionResult Index(Guid? id)
     {
-        DealDto? selected = id is null ? null : _deals.GetById(id.Value);
+        DealResponseDto? selected = id is null ? null : _deals.GetById(id.Value);
         return View(new HomeViewModel(_deals.GetAll(), selected));
     }
 

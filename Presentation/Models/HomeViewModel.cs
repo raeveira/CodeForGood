@@ -2,4 +2,4 @@ using Application.Deals;
 
 namespace Presentation.Models;
 
-public record HomeViewModel(IReadOnlyList<DealDto> Deals, DealDto? Selected);
+public record HomeViewModel(IReadOnlyList<DealResponseDto> Deals, DealResponseDto? Selected);

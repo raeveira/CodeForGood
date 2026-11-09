@@ -1,4 +1,4 @@
-using Domain;
+using Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;

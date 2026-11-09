@@ -1,7 +1,7 @@
 namespace Application.Deals;
 
-public sealed record DealDto(
-    int Id,
+public sealed record DealResponseDto(
+    Guid Id,
     string Title,
     string Customer,
     string Status,
