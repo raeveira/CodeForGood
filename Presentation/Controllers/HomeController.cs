@@ -63,6 +63,46 @@ public class HomeController : Controller
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
+    [HttpPost]
+    [Authorize(Roles = "Developer")]
+    public IActionResult AddModule(Guid dealId, Guid requirementId, string moduleName)
+    {
+        if (string.IsNullOrWhiteSpace(moduleName))
+        {
+            return RedirectToAction("Index", new { dealId, requirementId });
+        }
+
+        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        if (requirement is not null)
+        {
+            List<string> modules = new List<string>(requirement.Modules)
+            {
+                moduleName.Trim()
+            };
+            requirementCollection.UpdateRequirement(requirementId, requirement.Title, requirement.Description, (ERequirementType)Enum.Parse(typeof(ERequirementType), requirement.Type), (ERequirementPriority)Enum.Parse(typeof(ERequirementPriority), requirement.Priority), modules);
+        }
+
+        return RedirectToAction("Index", new { dealId, requirementId });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Developer")]
+    public IActionResult RemoveModule(Guid dealId, Guid requirementId, string module)
+    {
+        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        if (requirement is not null)
+        {
+            List<string> modules = requirement.Modules.Where(m => m != module).ToList();
+            
+            if (modules.Count > 0)
+            {
+                requirementCollection.UpdateRequirement(requirementId, requirement.Title, requirement.Description, (ERequirementType)Enum.Parse(typeof(ERequirementType), requirement.Type), (ERequirementPriority)Enum.Parse(typeof(ERequirementPriority), requirement.Priority), modules);
+            }
+        }
+
+        return RedirectToAction("Index", new { dealId, requirementId });
+    }
+
     [AllowAnonymous]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

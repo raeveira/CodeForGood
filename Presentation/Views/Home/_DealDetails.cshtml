@@ -103,8 +103,58 @@
         {
             <div class="Divider"></div>
             <div class="RequirementModulesSection">
-                <strong>Bedrijfsmodule(s):</strong>
-                <p class="RequirementModulesList">@string.Join(", ", selectedRequirement.Modules)</p>
+                <div class="ModulesHeader">
+                    <strong>Bedrijfsmodule(s):</strong>
+                    @if (User.IsInRole("Developer"))
+                    {
+                        <button type="button" class="AddModuleBtn" onclick="document.getElementById('addModuleModal').showModal()">+</button>
+                    }
+                </div>
+                    
+                <div class="ModulesList">
+                    @foreach (var module in selectedRequirement.Modules)
+                    {
+                        <div class="ModuleTag">
+                            <span>@module</span>
+                            @if (User.IsInRole("Developer"))
+                            {
+                                <form method="post" asp-action="RemoveModule" style="display: inline; margin-left: 0.5rem;">
+                                    <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
+                                    <input type="hidden" name="dealId" value="@dealId" />
+                                    <input type="hidden" name="module" value="@module" />
+                                    <button type="submit" class="RemoveModuleBtn" title="Remove module">×</button>
+                                </form>
+                            }
+                        </div>
+                    }
+                </div>
+                
+                @if (User.IsInRole("Developer"))
+                {
+                    <dialog id="addModuleModal" class="Modal">
+                        <div class="ModalContent">
+                            <div class="ModalHeader">
+                                <h3>Add New Module</h3>
+                                <button type="button" class="ModalCloseBtn" onclick="document.getElementById('addModuleModal').close()">×</button>
+                            </div>
+                            
+                            <form method="post" asp-action="AddModule" class="ModalForm">
+                                <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
+                                <input type="hidden" name="dealId" value="@dealId" />
+                                
+                                <div class="FormGroup">
+                                    <label for="moduleName">Module Name:</label>
+                                    <input type="text" id="moduleName" name="moduleName" placeholder="Enter module name..." class="FormInput" required />
+                                </div>
+                                
+                                <div class="ModalActions">
+                                    <button type="button" class="ModalBtn ModalCancelBtn" onclick="document.getElementById('addModuleModal').close()">Cancel</button>
+                                    <button type="submit" class="ModalBtn ModalSubmitBtn">Add Module</button>
+                                </div>
+                            </form>
+                        </div>
+                    </dialog>
+                }
             </div>
         }
     </div>

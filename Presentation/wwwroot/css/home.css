@@ -497,17 +497,17 @@
 
 .ChatMessage {
     padding: 0.75rem 0;
-    border-left: 4px solid #5B6F82;
+    border-left: 4px solid #646274;
     padding-left: 1rem;
     transition: background-color 0.2s ease;
 }
 
 .ChatMessage.FromSales {
-    border-left-color: #FF6B6B;
+    border-left-color: #D85252;
 }
 
 .ChatMessage.FromDeveloper {
-    border-left-color: #5B6F82;
+    border-left-color: #7B6BA8;
 }
 
 .ChatMessage:hover {
@@ -579,7 +579,7 @@
 
 .InputField button {
     padding: 0.75rem 1.5rem;
-    background-color: #0066CC;
+    background-color: #646274;
     color: white;
     border: none;
     border-radius: 4px;
@@ -591,11 +591,11 @@
 }
 
 .InputField button:hover {
-    background-color: #0052A3;
+    background-color: #4A5568;
 }
 
 .InputField button:active {
-    background-color: #003D7A;
+    background-color: #3A4555;
 }
 
 .ExtraInfo {
@@ -630,14 +630,217 @@
     font-size: 0.9rem;
 }
 
+.ModulesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
 .RequirementModulesSection strong {
-    display: block;
     color: #000000;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+    }
+    
+    .ModulesList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .ModuleTag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: #646274;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .RemoveModuleBtn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0;
+        line-height: 1;
+        opacity: 0.8;
+        transition: opacity 0.2s ease;
+    }
+    
+    .RemoveModuleBtn:hover {
+        opacity: 1;
+    }
+    
+    .AddModuleBtn {
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        background-color: transparent;
+        color: #646274;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease;
+    }
+    
+    .AddModuleBtn:hover {
+        background-color: #E8EAED;
+    }
+    
+    .AddModuleBtn:active {
+        background-color: #D8DADD;
+    }
+    
+    .AddModuleForm {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .AddModuleInput {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #D9D9D9;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-family: inherit;
+    }
+    
+    .AddModuleInput:focus {
+        outline: none;
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    /* MODAL STYLES */
+    
+    .Modal {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 400px;
+        width: 90%;
+        padding: 0;
+    }
+    
+    .Modal::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .ModalContent {
+        padding: 2rem;
+    }
+    
+    .ModalHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
 }
 
-.RequirementModulesList {
+.ModalHeader h3 {
     margin: 0;
+    font-size: 1.25rem;
+        font-weight: 700;
+        color: #000000;
+    }
+    
+    .ModalCloseBtn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
     color: #666666;
-    line-height: 1.4;
+    padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+    
+    .ModalCloseBtn:hover {
+        color: #000000;
+    }
+    
+    .ModalForm {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .FormGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .FormGroup label {
+        font-weight: 600;
+        color: #000000;
+        font-size: 0.9rem;
+    }
+    
+    .FormInput {
+        padding: 0.75rem;
+        border: 1px solid #D9D9D9;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+    
+    .FormInput:focus {
+        outline: none;
+        border-color: #646274;
+        box-shadow: 0 0 0 3px rgba(91, 111, 130, 0.1);
+    }
+    
+    .ModalActions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+    }
+    
+    .ModalBtn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease;
+    }
+    
+    .ModalCancelBtn {
+        background-color: #E0E0E0;
+        color: #000000;
+    }
+    
+    .ModalCancelBtn:hover {
+        background-color: #D0D0D0;
+    }
+    
+    .ModalSubmitBtn {
+        background-color: #646274;
+        color: white;
+    }
+    
+    .ModalSubmitBtn:hover {
+        background-color: #4A5568;
+    }
+    
+    .ModalSubmitBtn:active {
+        background-color: #3A4555;
 }
