@@ -27,8 +27,6 @@ public sealed class Requirement
             throw new ArgumentException("A requirement needs a title.");
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("A requirement needs a description.");
-        if (modules is null || modules.Count == 0)
-            throw new ArgumentException("A requirement needs at least one module.");
 
         Guid generatedId = Guid.NewGuid();
 

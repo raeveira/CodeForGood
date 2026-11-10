@@ -11,14 +11,14 @@ public class MockDealRepository : IDealRepository
     {
         List<Deal> mockDeals = new();
 
-        Deal webshop = Deal.Create("Webshop", "Klant A", "Nieuwe webshop met betaalintegratie.", new DateOnly(2027, 2, 1));
+        Deal webshop = Deal.Create("Webshop", "Customer A", "New webshop with payment integration.", new DateOnly(2027, 2, 1));
         mockDeals.Add(webshop);
 
-        Deal website = Deal.Create("Website", "Klant B", "Herontwerp van de bedrijfswebsite.", new DateOnly(2027, 3, 15));
+        Deal website = Deal.Create("Website", "Customer B", "Redesign of the company website.", new DateOnly(2027, 3, 15));
         website.StartProgress();
         mockDeals.Add(website);
 
-        Deal donations = Deal.Create("Donatieplatform", "Klant C", "Platform voor het beheren van donaties.", new DateOnly(2026, 12, 20));
+        Deal donations = Deal.Create("Donation Platform", "Customer C", "Platform for managing donations.", new DateOnly(2026, 12, 20));
         donations.StartProgress();
         donations.Complete();
         mockDeals.Add(donations);

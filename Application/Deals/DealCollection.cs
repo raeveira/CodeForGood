@@ -63,12 +63,13 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
         };
 
         return new DealResponseDto(
-            deal.Id,
-            deal.Title,
-            deal.Customer,
-            statusDisplay,
-            deal.Description,
-            deal.EndDate
+            Id: deal.Id,
+            Title: deal.Title,
+            Customer: deal.Customer,
+            Status: statusDisplay,
+            Description: deal.Description,
+            CreatedAt: deal.CreatedAt,
+            EndDate: deal.EndDate
         );
     }
 }

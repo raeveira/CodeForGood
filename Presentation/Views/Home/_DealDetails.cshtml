@@ -5,6 +5,13 @@
     IEnumerable<Application.Requirements.RequirementResponseDto> requirementsOfDeal = Model.Requirements;
     Application.Requirements.RequirementResponseDto? selectedRequirement = Model.SelectedRequirement;
     IEnumerable<Application.Messages.MessageResponseDto> selectedMessages = Model.Messages;
+    
+    bool ShowCreateRequirementModal = ViewData["ShowCreateRequirementModal"] as bool? ?? false;
+}
+
+@if (ShowCreateRequirementModal)
+{
+    <partial name="_CreateRequirementModal" model="Model" />
 }
 
 <div class="DealDetails">
@@ -12,7 +19,19 @@
         @if (selectedRequirement is null)
         {
             <div class="RequirementsListView">
-                <h2>Requirements</h2>
+                <div class="RequirementsListHeader">
+                    <h2>Requirements</h2>
+                    @if (User.IsInRole(role: "Sales"))
+                    {
+                        <form method="post" asp-action="OpenCreateRequirementModal" style="display: inline;">
+                            <input type="hidden" name="dealId" value="@dealId" />
+                            <button type="submit" class="AddRequirementBtn">
+                                <img src="~/images/Plus.svg" alt="Add Requirement" style="height: 16px;" />
+                                <span>Add Requirement</span>
+                            </button>
+                        </form>
+                    }
+                </div>
                 <div class="RequirementsListGrid">
                     @foreach (Application.Requirements.RequirementResponseDto requirement in requirementsOfDeal)
                     {
@@ -37,12 +56,21 @@
         {
             <div class="DealChat">
                 <div class="DealTitle">
-                    <a asp-action="Index" asp-route-dealId="@dealId" class="BackButton">
-                        <span>←</span>
-                    </a>
-                    <div>
-                        <h2>@selectedRequirement.Title</h2>
-                        <p class="RequirementDescriptionSmall">@selectedRequirement.Description</p>
+                    <div class="DealTitleColumn">
+                        <a asp-action="Index" asp-route-dealId="@dealId" class="BackButton">
+                            <span>←</span>
+                        </a>
+                        <div>
+                            <h2>@selectedRequirement.Title</h2>
+                            <p class="RequirementDescriptionSmall">@selectedRequirement.Description</p>
+                        </div>
+                    </div>
+                    <div class="DealTitleColumn">
+                        <form asp-action="">
+                            @* TODO: To be implemented *@
+                            <button class="RequirementActionBtn" type="submit" formaction="@Url.Action(action: "UpdateRequirement", new { dealId = dealId, requirementId = selectedRequirement.Id })">Update Requirement</button>
+                            <button class="RequirementActionBtn" style="color: Red; margin-left: 0.5rem;" type="submit" formaction="@Url.Action(action: "DeleteRequirement", new { dealId = dealId, requirementId = selectedRequirement.Id })">Delete Requirement</button>
+                        </form>
                     </div>
                 </div>
                 
@@ -54,7 +82,7 @@
                 <div class="MessageList">
                     @foreach (Application.Messages.MessageResponseDto chatMessage in selectedMessages)
                     {
-                        <div class="ChatMessage @(chatMessage.Author == "Sales" ? "FromSales" : "FromDeveloper")">
+                        <div class="ChatMessage @(chatMessage.Author.Equals(value: "Sales", comparisonType: StringComparison.Ordinal) ? "FromSales" : "FromDeveloper")">
                             <div class="MessageHeader">
                                 <strong>@chatMessage.Author</strong>
                                 <time datetime="@chatMessage.SentAt.ToString(format: "s")">@chatMessage.SentAt.ToString("dd MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)</time>
@@ -82,8 +110,10 @@
 
     <div class="DealInfo">
         <div class="ExtraInfo">
+            <h3>Deal Information</h3>
             <p><strong>Status:</strong> @Model.Deal.Status</p>
-            <p><strong>Expected end date:</strong> @Model.Deal.EndDate.ToString("dd-MM-yyyy")</p>
+            <p><strong>Expected end date:</strong> @Model.Deal.EndDate.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+            <p><strong>Created at:</strong> @Model.Deal.CreatedAt.ToString("HH:mm - dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
         </div>
         
         <div class="Divider"></div>
@@ -104,7 +134,7 @@
             <div class="Divider"></div>
             <div class="RequirementModulesSection">
                 <div class="ModulesHeader">
-                    <strong>Bedrijfsmodule(s):</strong>
+                    <strong>Company Module(s):</strong>
                     @if (User.IsInRole("Developer"))
                     {
                         <button type="button" class="AddModuleBtn" onclick="document.getElementById('addModuleModal').showModal()">+</button>

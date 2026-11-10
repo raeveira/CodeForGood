@@ -1,6 +1,13 @@
+@using Application.Deals
 @model HomeViewModel
 @{
     ViewData["Title"] = "Code for Good - Home";
+    bool showCreateDealModal = ViewData["ShowCreateDealModal"] as bool? ?? false;
+}
+
+@if (showCreateDealModal)
+{
+    <partial name="_CreateDealModal" model="Model" />
 }
 
 <main class="HomeMain">
@@ -17,11 +24,15 @@
         <div class="DealHeader">
             <h2>Deals</h2>
             
-            @if (User.IsInRole("Sales"))
+            @if (User.IsInRole(role: "Sales"))
             {
-                <button class="AddDealBtn">
-                    <img src="~/images/Plus.svg" alt="Add Deal" style="height: 16px;" />
-                </button>
+                <form method="post" asp-action="OpenCreateDealModal" style="display: inline;">
+                    <input type="hidden" name="dealId" value="@Model.SelectedDeal?.Id" />
+                    <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+                    <button type="submit" class="AddDealBtn">
+                        <img src="~/images/Plus.svg" alt="Add Deal" style="height: 16px;" />
+                    </button>
+                </form>
             }
         </div>
             
@@ -29,9 +40,9 @@
         
         @* Deals Cards *@
         <div class="DealsCards">
-            @foreach (var deal in Model.Deals)
+            @foreach (DealResponseDto deal in Model.Deals)
             {
-                <a asp-action="Index" asp-route-dealId="@deal.Id" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "")">
+                <a asp-action="Index" asp-route-dealId="@deal.Id" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "") @(deal.Status.Equals("Completed", StringComparison.Ordinal) ? "Completed" : deal.Status.Equals("In Progress", StringComparison.Ordinal) ? "InProgress" : deal.Status.Equals("Open", StringComparison.Ordinal) ? "Open" : "")">
                     <div class="DealHeading">
                         <div class="DealHeadingLeft">
                             <h4>@deal.Title</h4>

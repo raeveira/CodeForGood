@@ -1,3 +1,4 @@
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Application.Deals;
 
 public sealed class Deal
@@ -8,8 +9,9 @@ public sealed class Deal
     public string Description { get; private set; }
     public DateOnly EndDate { get; private set; }
     public DealStatus Status { get; private set; }
+    public DateTime CreatedAt { get; }
 
-    private Deal(Guid id, string title, string customer, string description, DateOnly endDate, DealStatus status)
+    private Deal(Guid id, string title, string customer, string description, DateOnly endDate, DealStatus status, DateTime createdAt)
     {
         Id = id;
         Title = title;
@@ -17,6 +19,7 @@ public sealed class Deal
         Description = description;
         EndDate = endDate;
         Status = status;
+        CreatedAt = createdAt;
     }
 
     public static Deal Create(string title, string customer, string description, DateOnly endDate)
@@ -25,9 +28,11 @@ public sealed class Deal
             throw new ArgumentException("A deal needs a title.");
         if (string.IsNullOrWhiteSpace(customer))
             throw new ArgumentException("A deal needs a customer.");
+        if (endDate < DateOnly.FromDateTime(DateTime.Now))
+            throw new ArgumentException("The end date cannot be in the past.");
 
         Guid generatedId = Guid.NewGuid();
-        return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.Open);
+        return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.Open, DateTime.Now);
     }
 
     public void UpdateDetails(string title, string description, DateOnly endDate)

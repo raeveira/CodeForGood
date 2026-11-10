@@ -1,0 +1,63 @@
+@model DealDetailsViewModel
+@using Application.Requirements
+
+@{
+    string? type = TempData["RequirementType"] as string;
+    string? priority = TempData["RequirementPriority"] as string;
+}
+
+<div class="create-deal-modal">
+    <div class="create-deal-modal-content" role="dialog" aria-modal="true" aria-labelledby="createRequirementTitle">
+        <div class="ModalHeader">
+            <h3 id="createRequirementTitle">Create New Requirement</h3>
+            <form id="closeCreateRequirementForm" method="post" asp-action="CloseCreateRequirementModal">
+                <input type="hidden" name="dealId" value="@Model.Deal.Id" />
+                <button type="submit" class="ModalCloseBtn" aria-label="Close">×</button>
+            </form>
+        </div>
+        
+        <form method="post" asp-action="CreateRequirement" class="ModalForm">
+            <input type="hidden" name="dealId" value="@Model.Deal.Id" />
+            @if (TempData["CreateRequirementError"] is string error)
+            {
+                <p class="text-danger" role="alert">@error</p>
+            }
+            <div class="FormGroup">
+                <label for="requirementTitle">Requirement Title:</label>
+                <input type="text" id="requirementTitle" name="title" value="@TempData["RequirementTitle"]" placeholder="Enter requirement title..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementDescription">Description:</label>
+                <textarea id="requirementDescription" name="description" placeholder="Enter requirement description..." class="FormInput" rows="3" required>@TempData["RequirementDescription"]</textarea>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementType">Type:</label>
+                <select id="requirementType" name="type" class="FormInput" required>
+                    <option value="">Select type</option>
+                    @foreach (ERequirementType option in Enum.GetValues<ERequirementType>())
+                    {
+                        <option value="@option" selected="@(type == option.ToString())">@option</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementPriority">Priority:</label>
+                <select id="requirementPriority" name="priority" class="FormInput" required>
+                    <option value="">Select priority</option>
+                    @foreach (ERequirementPriority option in Enum.GetValues<ERequirementPriority>())
+                    {
+                        <option value="@option" selected="@(priority == option.ToString())">@option</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="ModalActions">
+                <button type="submit" form="closeCreateRequirementForm" class="ModalBtn ModalCancelBtn">Cancel</button>
+                <button type="submit" class="ModalBtn ModalSubmitBtn">Create Requirement</button>
+            </div>
+        </form>
+    </div>
+</div>

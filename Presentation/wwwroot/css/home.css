@@ -215,6 +215,10 @@
     justify-content: center;
 }
 
+.AddDealBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
 .Divider {
     height: 1px;
     background-color: #D9D9D9;
@@ -298,6 +302,17 @@
     flex-direction: column;
 }
 
+.DealCard.Completed {
+    border-color: #52C41A;
+}
+
+.DealCard.InProgress {
+    border-color: #FAAD14;
+}
+
+.DealCard.Open {
+    border-color: #1890FF;
+}
 /* DEAL DETAILS STYLES */
 
 .DealDetails {
@@ -338,6 +353,33 @@
     color: #000000;
 }
 
+.RequirementsListHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.AddRequirementBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    color: #000000;
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    gap: 0.5rem;
+}
+
+.AddRequirementBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
 .RequirementsListGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -441,18 +483,41 @@
 .DealTitle {
     display: flex;
     align-items: flex-start;
+    justify-content: space-between;
     padding: 1rem;
     border-bottom: 1px solid #D9D9D9;
     gap: 1rem;
 }
 
-.DealTitle h2 {
+.DealTitleColumn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+}
+
+.DealTitleColumn h2 {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
     color: #000000;
 }
 
+.RequirementActionBtn {
+    padding: 1rem;
+    background-color: #fdfcfc;
+    border: 1px solid #F0F0F0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000000;
+    transition: background-color 0.2s ease;
+}
+
+.RequirementActionBtn:hover {
+    background-color: #F0F0F0;
+}
 .RequirementDescriptionSmall {
     font-size: 0.85rem;
     color: #99A3B3;
@@ -602,6 +667,12 @@
     font-size: 0.9rem;
 }
 
+.ExtraInfo h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: #000000;
+    font-weight: 700;
+}
 .ExtraInfo p {
     margin: 0.5rem 0;
     color: #333333;
@@ -843,4 +914,78 @@
     
     .ModalSubmitBtn:active {
         background-color: #3A4555;
+}
+
+/* Create Deal Modal Styles */
+
+.create-deal-modal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.create-deal-modal-content {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: min(90%, 500px);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.ModalCloseBtn {
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+.ModalCloseBtn:hover {
+    color: #000000;
+}
+
+/* Create Requirement Modal Styles */
+.create-requirement-modal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.create-requirement-content {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: min(90%, 500px);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
 }

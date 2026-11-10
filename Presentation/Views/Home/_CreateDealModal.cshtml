@@ -1,0 +1,48 @@
+
+@model HomeViewModel
+
+<div class="create-deal-modal">
+    <div class="create-deal-modal-content" role="dialog" aria-modal="true" aria-labelledby="createDealTitle">
+        <div class="ModalHeader">
+            <h3 id="createDealTitle">Create New Deal</h3>
+            <form id="closeCreateDealForm" method="post" asp-action="CloseCreateDealModal">
+                <input type="hidden" name="dealId" value="@Model.SelectedDeal?.Id" />
+                <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+                <button type="submit" class="ModalCloseBtn" aria-label="Close">×</button>
+            </form>
+        </div>
+        
+        <form method="post" asp-action="CreateDeal" class="ModalForm">
+            <input type="hidden" name="dealId" value="@Model.SelectedDeal?.Id" />
+            <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+            @if (TempData["CreateDealError"] is string error)
+            {
+                <p class="text-danger" role="alert">@error</p>
+            }
+            <div class="FormGroup">
+                <label for="dealTitle">Deal Title:</label>
+                <input type="text" id="dealTitle" name="title" placeholder="Enter deal title..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealCustomer">Customer:</label>
+                <input type="text" id="dealCustomer" name="customer" placeholder="Enter customer name..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealDescription">Description:</label>
+                <textarea id="dealDescription" name="description" placeholder="Enter deal description..." class="FormInput" rows="3" required></textarea>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealEndDate">Expected End Date:</label>
+                <input type="date" id="dealEndDate" name="endDate" class="FormInput" required />
+            </div>
+            
+            <div class="ModalActions">
+                <button type="submit" form="closeCreateDealForm" class="ModalBtn ModalCancelBtn">Cancel</button>
+                <button type="submit" class="ModalBtn ModalSubmitBtn">Create Deal</button>
+            </div>
+        </form>
+    </div>
+</div>

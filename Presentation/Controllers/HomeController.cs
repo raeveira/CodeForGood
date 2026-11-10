@@ -5,6 +5,7 @@ using Application.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Presentation.Controllers;
 
@@ -22,8 +23,11 @@ public class HomeController : Controller
         this.messageCollection = messageCollection;
     }
 
-    public IActionResult Index(Guid? dealId, Guid? requirementId)
+    public IActionResult Index(Guid? dealId, Guid? requirementId, bool showCreateDealModal = false, bool showCreateRequirementModal = false)
     {
+        ViewData["ShowCreateDealModal"] = showCreateDealModal && User.IsInRole("Sales");
+        ViewData["ShowCreateRequirementModal"] = showCreateRequirementModal && User.IsInRole("Sales");
+
         DealResponseDto? selectedDeal = dealId is null ? null : dealCollection.GetById(dealId.Value);
 
         IReadOnlyList<RequirementResponseDto> requirementsForDeal = selectedDeal is null
@@ -38,8 +42,20 @@ public class HomeController : Controller
             ? new List<MessageResponseDto>()
             : messageCollection.GetMessagesForRequirement(selectedRequirement.Id);
 
+        // Sort deals by creation date, newest first
+        // then sort deals by their status, in progress -> open -> completed 
+        IReadOnlyList<DealResponseDto> sortedDeals = [.. dealCollection.GetAll().OrderByDescending(deal => deal.CreatedAt).ToList().OrderBy(deal =>
+            Convert.ToString(deal.Status)?.Replace(" ", string.Empty).ToLowerInvariant() switch
+            {
+                "inprogress" => 0,
+                "open" => 1,
+                "completed" => 2,
+                _ => 3
+            })];
+
+
         HomeViewModel viewModel = new HomeViewModel(
-            dealCollection.GetAll(),
+            sortedDeals,
             selectedDeal,
             requirementsForDeal,
             selectedRequirement,
@@ -109,5 +125,81 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-}
 
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult OpenCreateDealModal(Guid? dealId, Guid? requirementId)
+    {
+        return RedirectToAction("Index", new { dealId, requirementId, showCreateDealModal = true });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult CloseCreateDealModal(Guid? dealId, Guid? requirementId)
+    {
+        return RedirectToAction("Index", new { dealId, requirementId });
+    }
+
+    [Authorize(Roles = "Sales")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult CreateDeal(string title, string customer, string description, DateOnly endDate, Guid? dealId, Guid? requirementId)
+    {
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(customer) || string.IsNullOrWhiteSpace(description) || endDate == default)
+        {
+            TempData["CreateDealError"] = "All fields are required and the end date must be valid.";
+            return RedirectToAction("Index", new { dealId, requirementId, showCreateDealModal = true });
+        }
+
+        dealCollection.Create(title.Trim(), customer.Trim(), description.Trim(), endDate);
+        return RedirectToAction("Index", new { dealId, requirementId });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult OpenCreateRequirementModal(Guid dealId)
+    {
+        return RedirectToAction("Index", new { dealId, showCreateRequirementModal = true });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult CloseCreateRequirementModal(Guid dealId)
+    {
+        return RedirectToAction("Index", new { dealId });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult CreateRequirement(string title, string description, string type, string priority, Guid dealId)
+    {
+        if (dealCollection.GetById(dealId) is null)
+        {
+            return NotFound();
+        }
+
+        // Only developers can add modules, so for sales we initialize an empty list.
+        List<string> moduleList = new List<string>();
+
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description)
+            || !Enum.TryParse(type, out ERequirementType requirementType) || !Enum.IsDefined(requirementType)
+            || !Enum.TryParse(priority, out ERequirementPriority requirementPriority) || !Enum.IsDefined(requirementPriority)
+            )
+        {
+            TempData["CreateRequirementError"] = "Enter a title, description, valid type and priority.";
+            TempData["RequirementTitle"] = title;
+            TempData["RequirementDescription"] = description;
+            TempData["RequirementType"] = type;
+            TempData["RequirementPriority"] = priority;
+            return RedirectToAction("Index", new { dealId, showCreateRequirementModal = true });
+        }
+
+        requirementCollection.CreateRequirement(dealId, title.Trim(), description.Trim(), requirementType, requirementPriority, moduleList);
+        return RedirectToAction("Index", new { dealId });
+    }
+}
