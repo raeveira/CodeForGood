@@ -22,14 +22,23 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
         dealRepository.Add(newDeal);
     }
 
-    public void UpdateDealDetails(Guid dealId, string title, string description, DateOnly endDate)
+    public void UpdateDealDetails(Guid dealId, string title, string customer, string description, DateOnly endDate)
     {
         Deal? deal = dealRepository.GetById(dealId);
         if (deal is null)
             throw new InvalidOperationException($"Deal with ID {dealId} not found.");
 
-        deal.UpdateDetails(title, description, endDate);
+        deal.UpdateDetails(title, customer, description, endDate);
         dealRepository.Update(deal);
+    }
+
+    public void DeleteDeal(Guid dealId)
+    {
+        Deal? deal = dealRepository.GetById(dealId);
+        if (deal is null)
+            throw new InvalidOperationException($"Deal with ID {dealId} not found.");
+
+        dealRepository.Remove(deal);
     }
 
     public void StartDealProgress(Guid dealId)

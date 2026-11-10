@@ -6,8 +6,8 @@
     string? priority = TempData["RequirementPriority"] as string;
 }
 
-<div class="create-deal-modal">
-    <div class="create-deal-modal-content" role="dialog" aria-modal="true" aria-labelledby="createRequirementTitle">
+<div class="create-requirement-modal">
+    <div class="create-requirement-modal-content" role="dialog" aria-modal="true" aria-labelledby="createRequirementTitle">
         <div class="ModalHeader">
             <h3 id="createRequirementTitle">Create New Requirement</h3>
             <form id="closeCreateRequirementForm" method="post" asp-action="CloseCreateRequirementModal">
@@ -38,7 +38,7 @@
                     <option value="">Select type</option>
                     @foreach (ERequirementType option in Enum.GetValues<ERequirementType>())
                     {
-                        <option value="@option" selected="@(type == option.ToString())">@option</option>
+                        <option value="@option" selected="@(type?.Equals(option.ToString(), StringComparison.Ordinal))">@option</option>
                     }
                 </select>
             </div>
@@ -49,7 +49,7 @@
                     <option value="">Select priority</option>
                     @foreach (ERequirementPriority option in Enum.GetValues<ERequirementPriority>())
                     {
-                        <option value="@option" selected="@(priority == option.ToString())">@option</option>
+                        <option value="@option" selected="@(priority?.Equals(option.ToString(), StringComparison.Ordinal))">@option</option>
                     }
                 </select>
             </div>

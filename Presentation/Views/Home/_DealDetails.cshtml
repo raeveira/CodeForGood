@@ -7,11 +7,21 @@
     IEnumerable<Application.Messages.MessageResponseDto> selectedMessages = Model.Messages;
     
     bool ShowCreateRequirementModal = ViewData["ShowCreateRequirementModal"] as bool? ?? false;
+    bool ShowUpdateRequirementModal = ViewData["ShowUpdateRequirementModal"] as bool? ?? false;
+    bool ShowUpdateDealModal = ViewData["ShowUpdateDealModal"] as bool? ?? false;
 }
 
 @if (ShowCreateRequirementModal)
 {
     <partial name="_CreateRequirementModal" model="Model" />
+}
+@if (ShowUpdateRequirementModal)
+{
+    <partial name="_UpdateRequirementModal" model="Model" />
+}
+@if (ShowUpdateDealModal)
+{
+    <partial name="_UpdateDealModal" model="Model" />
 }
 
 <div class="DealDetails">
@@ -65,13 +75,15 @@
                             <p class="RequirementDescriptionSmall">@selectedRequirement.Description</p>
                         </div>
                     </div>
-                    <div class="DealTitleColumn">
-                        <form asp-action="">
-                            @* TODO: To be implemented *@
-                            <button class="RequirementActionBtn" type="submit" formaction="@Url.Action(action: "UpdateRequirement", new { dealId = dealId, requirementId = selectedRequirement.Id })">Update Requirement</button>
-                            <button class="RequirementActionBtn" style="color: Red; margin-left: 0.5rem;" type="submit" formaction="@Url.Action(action: "DeleteRequirement", new { dealId = dealId, requirementId = selectedRequirement.Id })">Delete Requirement</button>
-                        </form>
-                    </div>
+                    @if (User.IsInRole("Sales"))
+                    {
+                        <div class="DealTitleColumn">
+                            <form method="post" asp-action="OpenUpdateRequirementModal" asp-route-dealId="@dealId" asp-route-requirementId="@selectedRequirement.Id">
+                                <button class="RequirementActionBtn" type="submit">Update Requirement</button>
+                                <button class="RequirementActionBtn" type="submit" formaction="@Url.Action(action: "DeleteRequirement", new { dealId = dealId, requirementId = selectedRequirement.Id })" style="color: Red; margin-left: 0.5rem;" >Delete Requirement</button>
+                            </form>
+                        </div>                
+                    }
                 </div>
                 
                 <div class="ThreadHeader">
@@ -111,6 +123,15 @@
     <div class="DealInfo">
         <div class="ExtraInfo">
             <h3>Deal Information</h3>
+             @if (User.IsInRole("Sales"))
+            {
+                <div class="DealTitleColumn">
+                    <form method="post" asp-action="OpenUpdateDealModal" asp-route-dealId="@dealId" asp-route-requirementId="@selectedRequirement?.Id">
+                        <button class="DealActionBtn" type="submit">Update Deal</button>
+                        <button class="DealActionBtn" type="submit" formaction="@Url.Action(action: "DeleteDeal", new { dealId = dealId })" style="color: Red; margin-left: 0.5rem;" >Delete Deal</button>
+                    </form>
+                </div>                
+            }
             <p><strong>Status:</strong> @Model.Deal.Status</p>
             <p><strong>Expected end date:</strong> @Model.Deal.EndDate.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
             <p><strong>Created at:</strong> @Model.Deal.CreatedAt.ToString("HH:mm - dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>

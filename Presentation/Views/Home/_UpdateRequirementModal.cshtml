@@ -1,0 +1,69 @@
+@model DealDetailsViewModel
+@using Application.Requirements
+
+@{
+    RequirementResponseDto requirement = Model.SelectedRequirement!;
+    bool hasEdits = TempData["UpdateRequirementError"] is not null;
+    string title = hasEdits ? TempData["RequirementTitle"] as string ?? "" : requirement.Title;
+    string description = hasEdits ? TempData["RequirementDescription"] as string ?? "" : requirement.Description;
+    string? type = hasEdits ? TempData["RequirementType"] as string : requirement.Type;
+    string? priority = hasEdits ? TempData["RequirementPriority"] as string : requirement.Priority;
+}
+
+<div class="update-requirement-modal">
+    <div class="update-requirement-modal-content" role="dialog" aria-modal="true" aria-labelledby="updateRequirementTitle">
+        <div class="ModalHeader">
+            <h3 id="updateRequirementTitle">Update Requirement</h3>
+            <form id="closeUpdateRequirementForm" method="post" asp-action="CloseUpdateRequirementModal">
+                <input type="hidden" name="dealId" value="@Model.Deal.Id" />
+                <input type="hidden" name="requirementId" value="@requirement.Id" />
+                <button type="submit" class="ModalCloseBtn" aria-label="Close">×</button>
+            </form>
+        </div>
+        
+        <form method="post" asp-action="UpdateRequirement" class="ModalForm">
+            <input type="hidden" name="dealId" value="@Model.Deal.Id" />
+            <input type="hidden" name="requirementId" value="@requirement.Id" />
+            @if (TempData["UpdateRequirementError"] is string error)
+            {
+                <p class="text-danger" role="alert">@error</p>
+            }
+            <div class="FormGroup">
+                <label for="requirementTitle">Requirement Title:</label>
+                <input type="text" id="requirementTitle" name="title" value="@title" placeholder="Enter requirement title..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementDescription">Description:</label>
+                <textarea id="requirementDescription" name="description" placeholder="Enter requirement description..." class="FormInput" rows="3" required>@description</textarea>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementType">Type:</label>
+                <select id="requirementType" name="type" class="FormInput" required>
+                    <option value="">Select type</option>
+                    @foreach (ERequirementType option in Enum.GetValues<ERequirementType>())
+                    {
+                        <option value="@option" selected="@(type?.Equals(option.ToString(), StringComparison.Ordinal))">@option</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="requirementPriority">Priority:</label>
+                <select id="requirementPriority" name="priority" class="FormInput" required>
+                    <option value="">Select priority</option>
+                    @foreach (ERequirementPriority option in Enum.GetValues<ERequirementPriority>())
+                    {
+                        <option value="@option" selected="@(priority?.Equals(option.ToString(), StringComparison.Ordinal))">@option</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="ModalActions">
+                <button type="submit" form="closeUpdateRequirementForm" class="ModalBtn ModalCancelBtn">Cancel</button>
+                <button type="submit" class="ModalBtn ModalSubmitBtn">Update Requirement</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+@model DealDetailsViewModel
+@using Application.Deals
+
+@{
+    DealResponseDto deal = Model.Deal;
+    bool hasEdits = TempData["UpdateDealError"] is not null;
+    string title = hasEdits ? TempData["DealTitle"] as string ?? "" : deal.Title;
+    string description = hasEdits ? TempData["DealDescription"] as string ?? "" : deal.Description;
+    string customer = hasEdits ? TempData["DealCustomer"] as string ?? "" : deal.Customer;
+    string endDate = hasEdits ? TempData["DealEndDate"] as string ?? "" : deal.EndDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+}
+
+<div class="update-deal-modal">
+    <div class="update-deal-modal-content" role="dialog" aria-modal="true" aria-labelledby="updateDealTitle">
+        <div class="ModalHeader">
+            <h3 id="updateDealTitle">Update Deal</h3>
+            <form id="closeUpdateDealForm" method="post" asp-action="CloseUpdateDealModal">
+                <input type="hidden" name="dealId" value="@deal.Id" />
+                <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+                <button type="submit" class="ModalCloseBtn" aria-label="Close">×</button>
+            </form>
+        </div>
+        
+        <form method="post" asp-action="UpdateDeal" class="ModalForm">
+            <input type="hidden" name="dealId" value="@deal.Id" />
+            <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+            @if (TempData["UpdateDealError"] is string error)
+            {
+                <p class="text-danger" role="alert">@error</p>
+            }
+            <div class="FormGroup">
+                <label for="dealTitle">Deal Title:</label>
+                <input type="text" id="dealTitle" name="title" value="@title" placeholder="Enter deal title..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealCustomer">Customer:</label>
+                <input type="text" id="dealCustomer" name="customer" value="@customer" placeholder="Enter customer name..." class="FormInput" required />
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealDescription">Description:</label>
+                <textarea id="dealDescription" name="description" placeholder="Enter deal description..." class="FormInput" rows="3" required>@description</textarea>
+            </div>
+            
+            <div class="FormGroup">
+                <label for="dealEndDate">Expected End Date:</label>
+                <input type="date" id="dealEndDate" name="endDate" value="@endDate" class="FormInput" required />
+            </div>
+            
+            <div class="ModalActions">
+                <button type="submit" form="closeUpdateDealForm" class="ModalBtn ModalCancelBtn">Cancel</button>
+                <button type="submit" class="ModalBtn ModalSubmitBtn">Update Deal</button>
+            </div>
+        </form>
+    </div>
+</div>

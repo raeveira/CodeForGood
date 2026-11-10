@@ -35,14 +35,17 @@ public sealed class Deal
         return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.Open, DateTime.Now);
     }
 
-    public void UpdateDetails(string title, string description, DateOnly endDate)
+    public void UpdateDetails(string title, string customer, string description, DateOnly endDate)
     {
         if (Status == DealStatus.Completed)
             throw new InvalidOperationException("A completed deal cannot be changed.");
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("A deal needs a title.");
+        if (string.IsNullOrWhiteSpace(customer))
+            throw new ArgumentException("A deal needs a customer.");
 
         Title = title.Trim();
+        Customer = customer.Trim();
         Description = description?.Trim() ?? string.Empty;
         EndDate = endDate;
     }
