@@ -123,7 +123,7 @@
     <div class="DealInfo">
         <div class="ExtraInfo">
             <h3>Deal Information</h3>
-             @if (User.IsInRole("Sales"))
+             @if (User.IsInRole(role: "Sales"))
             {
                 <div class="DealTitleColumn">
                     <form method="post" asp-action="OpenUpdateDealModal" asp-route-dealId="@dealId" asp-route-requirementId="@selectedRequirement?.Id">
