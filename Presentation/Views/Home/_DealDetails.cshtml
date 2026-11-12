@@ -181,7 +181,7 @@
                     }
                 </div>
                 
-                @if (User.IsInRole("Developer"))
+                @if (User.IsInRole(role: "Developer"))
                 {
                     <dialog id="addModuleModal" class="Modal">
                         <div class="ModalContent">
