@@ -12,6 +12,9 @@
 
 @section Head {
     <script src="~/js/deals-sidebar-resize.js" asp-append-version="true"></script>
+    <script src="~/js/deals-sort.js" asp-append-version="true"
+            data-active-sort="@Model.ActiveSort"
+            data-sort-options="@System.Text.Json.JsonSerializer.Serialize(Model.SortOptions.Select(option => option.Key))"></script>
 }
 
 <main class="HomeMain" data-attention-user="@User.Identity?.Name" data-selected-deal="@Model.SelectedDeal?.Id" data-selected-requirement="@Model.SelectedRequirement?.Id">
@@ -123,6 +126,7 @@
         <p class="NoDealsMessage" id="noDealsMessage" hidden>No deals match the selected statuses.</p>
         <p class="SidebarResizeError" id="sidebarResizeError" role="status" hidden></p>
         <p class="SidebarResizeError" id="attentionStorageError" role="status" hidden></p>
+        <p class="SidebarResizeError" id="sortStorageError" role="status" hidden></p>
     </div>
 
     <div class="SidebarResizeHandle" id="sidebarResizeHandle" role="separator" aria-label="Resize deals list"
@@ -147,69 +151,4 @@
 @section Scripts {
     <script src="~/js/deals-attention.js" asp-append-version="true"></script>
     <script src="~/js/chat-commands.js" asp-append-version="true"></script>
-    <script>
-        (function () {
-            const SORT_KEY = 'dealSort';
-            const HIDDEN_KEY = 'dealHiddenStatuses';
-            const modal = document.getElementById('sortModal');
-            const form = modal.querySelector('form');
-            const filters = [...modal.querySelectorAll('.StatusFilter')];
-            const selectAll = document.getElementById('statusSelectAll');
-            const cards = [...document.querySelectorAll('.DealCard')];
-            const emptyMessage = document.getElementById('noDealsMessage');
-
-            const readHidden = () => {
-                try { return JSON.parse(localStorage.getItem(HIDDEN_KEY)) || []; } catch { return []; }
-            };
-
-            // Restore the saved sort when the URL doesn't specify one.
-            const url = new URL(window.location.href);
-            const savedSort = localStorage.getItem(SORT_KEY);
-            if (!url.searchParams.has('sort') && savedSort && savedSort !== 'default') {
-                url.searchParams.set('sort', savedSort);
-                window.location.replace(url);
-                return;
-            }
-            if (url.searchParams.has('sort')) {
-                localStorage.setItem(SORT_KEY, url.searchParams.get('sort'));
-            }
-
-            const syncSelectAll = () => {
-                const checked = filters.filter(f => f.checked).length;
-                selectAll.checked = checked === filters.length;
-                selectAll.indeterminate = checked > 0 && checked < filters.length;
-            };
-
-            const applyFilter = () => {
-                const hidden = readHidden();
-                let visible = 0;
-                cards.forEach(card => {
-                    const isHidden = hidden.includes(card.dataset.status);
-                    card.hidden = isHidden;
-                    if (!isHidden) visible++;
-                });
-                emptyMessage.hidden = visible > 0 || cards.length === 0;
-                filters.forEach(f => f.checked = !hidden.includes(f.value));
-                syncSelectAll();
-            };
-
-            selectAll.addEventListener('change', () => {
-                filters.forEach(f => f.checked = selectAll.checked);
-                syncSelectAll();
-            });
-            filters.forEach(f => f.addEventListener('change', syncSelectAll));
-
-            form.addEventListener('submit', () => {
-                localStorage.setItem(HIDDEN_KEY, JSON.stringify(filters.filter(f => !f.checked).map(f => f.value)));
-                const sort = form.querySelector('input[name="sort"]:checked');
-                if (sort) localStorage.setItem(SORT_KEY, sort.value);
-            });
-
-            document.getElementById('openSortModal').addEventListener('click', () => modal.showModal());
-            document.getElementById('closeSortModal').addEventListener('click', () => { applyFilter(); modal.close(); });
-            document.getElementById('cancelSortModal').addEventListener('click', () => { applyFilter(); modal.close(); });
-
-            applyFilter();
-        })();
-    </script>
 }

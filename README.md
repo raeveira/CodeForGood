@@ -1,5 +1,10 @@
 # Code for Good Sales to Dev
 
+## Deal list preferences
+
+The selected sort and status filters are saved in browser local storage. A cookie mirrors
+the sort choice so the server can render the list in the saved order on navigation.
+
 ## Attention and deadline requests
 
 Deals and requirements show an attention badge for new items and messages from the other role.

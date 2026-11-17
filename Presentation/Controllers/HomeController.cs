@@ -49,7 +49,8 @@ public class HomeController : Controller
             : messageCollection.GetMessagesForRequirement(selectedRequirement.Id);
 
         IReadOnlyList<DealSortOption> sortOptions = DealSortOption.GetAll();
-        DealSortOption activeSort = sortOptions.FirstOrDefault(option => option.Key == sort) ?? sortOptions[0];
+        string? requestedSort = sort ?? Request.Cookies["dealSort"];
+        DealSortOption activeSort = sortOptions.FirstOrDefault(option => option.Key == requestedSort) ?? sortOptions[0];
         IReadOnlyList<DealResponseDto> deals = dealCollection.GetAll();
         Dictionary<Guid, AttentionInfo> dealAttention = new();
         Dictionary<Guid, AttentionInfo> requirementAttention = new();
