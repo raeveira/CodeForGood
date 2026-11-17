@@ -830,6 +830,49 @@
     color: #666;
 }
 
+.DeadlineComposer {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.DeadlineComposer[hidden],
+.InputField textarea[hidden] {
+    display: none;
+}
+
+.DeadlineCommandName {
+    font-weight: 600;
+}
+
+.DeadlineComposer input {
+    min-width: 0;
+    padding: 0.35rem;
+    border: 1px solid #0066CC;
+    border-radius: 4px;
+    font: inherit;
+}
+
+.InputField .DeadlineCancel {
+    margin-left: auto;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    color: #666;
+}
+
+.InputField .DeadlineCancel:hover,
+.InputField .DeadlineCancel:focus-visible {
+    background: #f0eff3;
+    outline: 2px solid #646274;
+}
+
 .InputField textarea {
     flex: 1;
     padding: 0.75rem;

@@ -13,7 +13,8 @@ requirement as seen. Read state is saved per signed-in username in the current b
 Indicators update on page navigation or reload.
 
 In a requirement chat, a developer can send `/deadline YYYY-MM-DD` to request a new
-deadline. Typing `/` shows the command suggestion; select it or press Enter to insert it.
+deadline. Typing `/` shows the command suggestion; select it or press Enter to open
+a required date field. Use the calendar or enter a date, then press Send.
 Sales can choose **Adapt** on the request to update both the deal's expected
 end date and that requirement's deadline. A pending request continues to need Sales'
 attention until adapted.

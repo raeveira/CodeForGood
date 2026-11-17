@@ -139,6 +139,12 @@
                                     <small>YYYY-MM-DD</small>
                                 </button>
                             </div>
+                            <div class="DeadlineComposer" id="deadlineComposer" hidden>
+                                <span class="DeadlineCommandName">/deadline</span>
+                                <label class="visually-hidden" for="requestedDeadline">Requested deadline</label>
+                                <input id="requestedDeadline" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)" max="9999-12-31" required disabled />
+                                <button type="button" class="DeadlineCancel" id="cancelDeadline" aria-label="Cancel deadline request">×</button>
+                            </div>
                         }
                         <textarea name="messageText" rows="1" placeholder="Type a message..." oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"></textarea>
                         <button type="submit">Send</button>
