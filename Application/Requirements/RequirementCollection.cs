@@ -41,6 +41,14 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
         requirementRepository.Remove(requirement);
     }
 
+    public void UpdateDeadline(Guid requirementId, DateOnly deadline)
+    {
+        Requirement requirement = requirementRepository.GetById(requirementId)
+            ?? throw new InvalidOperationException($"Requirement with ID {requirementId} not found.");
+        requirement.UpdateDeadline(deadline);
+        requirementRepository.Update(requirement);
+    }
+
     private static RequirementResponseDto ConvertToDto(Requirement requirement)
     {
         string typeDisplay = requirement.Type switch
@@ -66,7 +74,8 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
             requirement.Description,
             typeDisplay,
             priorityDisplay,
-            requirement.Modules
+            requirement.Modules,
+            requirement.Deadline
         );
     }
 }

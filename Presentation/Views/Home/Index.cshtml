@@ -10,7 +10,7 @@
     <partial name="_CreateDealModal" model="Model" />
 }
 
-<main class="HomeMain">
+<main class="HomeMain" data-attention-user="@User.Identity?.Name" data-selected-deal="@Model.SelectedDeal?.Id" data-selected-requirement="@Model.SelectedRequirement?.Id">
     <div class="Sidebar" id="dealsSidebar">
         @if (User.IsInRole("Sales"))
         {
@@ -96,10 +96,11 @@
         <div class="DealsCards">
             @foreach (DealResponseDto deal in Model.Deals)
             {
-                <a asp-action="Index" asp-route-dealId="@deal.Id" asp-route-sort="@Model.ActiveSort" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "") @deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)" data-status="@deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)">
+                <a asp-action="Index" asp-route-dealId="@deal.Id" asp-route-sort="@Model.ActiveSort" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "") @deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)" data-status="@deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)" data-deal-id="@deal.Id" data-attention-events="@System.Text.Json.JsonSerializer.Serialize(Model.DealAttention[deal.Id].Events)" data-attention-pending="@Model.DealAttention[deal.Id].PendingDeadline.ToString().ToLowerInvariant()">
                     <div class="DealHeading">
                         <div class="DealHeadingLeft">
                             <h4>@deal.Title</h4>
+                            <span class="AttentionBadge" hidden>Needs attention</span>
                             <p>@deal.Customer</p>
                         </div>
 
@@ -117,6 +118,7 @@
         </div>
         <p class="NoDealsMessage" id="noDealsMessage" hidden>No deals match the selected statuses.</p>
         <p class="SidebarResizeError" id="sidebarResizeError" role="status" hidden></p>
+        <p class="SidebarResizeError" id="attentionStorageError" role="status" hidden></p>
     </div>
 
     <div class="SidebarResizeHandle" id="sidebarResizeHandle" role="separator" aria-label="Resize deals list"
@@ -131,7 +133,7 @@
         
         @if (Model.SelectedDeal is not null) 
         { 
-            <partial name="_DealDetails" model="new DealDetailsViewModel(Model.SelectedDeal, Model.RequirementsForDeal, Model.SelectedRequirement, Model.MessagesForRequirement)" />
+            <partial name="_DealDetails" model="new DealDetailsViewModel(Model.SelectedDeal, Model.RequirementsForDeal, Model.SelectedRequirement, Model.MessagesForRequirement, Model.RequirementAttention)" />
         }
         
     </div>
@@ -140,6 +142,8 @@
 
 @section Scripts {
     <script src="~/js/deals-sidebar-resize.js" asp-append-version="true"></script>
+    <script src="~/js/deals-attention.js" asp-append-version="true"></script>
+    <script src="~/js/chat-commands.js" asp-append-version="true"></script>
     <script>
         (function () {
             const SORT_KEY = 'dealSort';

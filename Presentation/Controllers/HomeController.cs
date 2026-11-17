@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Application.Deals;
 using Application.Messages;
 using Application.Requirements;
@@ -40,37 +41,107 @@ public class HomeController : Controller
             ? null
             : requirementCollection.GetRequirementById(requirementId.Value);
 
+        if (selectedRequirement is not null && selectedRequirement.DealId != selectedDeal?.Id)
+            return NotFound();
+
         IReadOnlyList<MessageResponseDto> messagesForRequirement = selectedRequirement is null
             ? new List<MessageResponseDto>()
             : messageCollection.GetMessagesForRequirement(selectedRequirement.Id);
 
         IReadOnlyList<DealSortOption> sortOptions = DealSortOption.GetAll();
         DealSortOption activeSort = sortOptions.FirstOrDefault(option => option.Key == sort) ?? sortOptions[0];
+        IReadOnlyList<DealResponseDto> deals = dealCollection.GetAll();
+        Dictionary<Guid, AttentionInfo> dealAttention = new();
+        Dictionary<Guid, AttentionInfo> requirementAttention = new();
+        foreach (DealResponseDto deal in deals)
+        {
+            List<string> dealEvents = [$"deal:{deal.Id}"];
+            bool dealPending = false;
+            foreach (RequirementResponseDto requirement in requirementCollection.GetRequirementsForDeal(deal.Id))
+            {
+                IReadOnlyList<MessageResponseDto> messages = messageCollection.GetMessagesForRequirement(requirement.Id);
+                List<string> events = [$"requirement:{requirement.Id}"];
+                events.AddRange(messages
+                    .Where(message => !string.Equals(message.Author, User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
+                    .Select(message => $"message:{message.Id}"));
+                bool pending = User.IsInRole("Sales") && messages.Any(message => message.RequestedDeadline is not null && !message.DeadlineAdapted);
+                requirementAttention[requirement.Id] = new AttentionInfo(events, pending);
+                dealEvents.AddRange(events);
+                dealPending |= pending;
+            }
+            dealAttention[deal.Id] = new AttentionInfo(dealEvents, dealPending);
+        }
 
         HomeViewModel viewModel = new HomeViewModel(
-            activeSort.Apply(dealCollection.GetAll()),
+            activeSort.Apply(deals),
             selectedDeal,
             requirementsForDeal,
             selectedRequirement,
             messagesForRequirement,
             sortOptions,
-            activeSort.Key
+            activeSort.Key,
+            dealAttention,
+            requirementAttention
         );
 
         return View(viewModel);
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult SendMessage(Guid dealId, Guid requirementId, string messageText)
     {
+        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+            return NotFound();
+
         if (string.IsNullOrWhiteSpace(messageText))
         {
             return RedirectToAction("Index", new { dealId, requirementId });
         }
 
         string author = User.Identity?.Name ?? "Anonymous";
-        messageCollection.SendMessage(requirementId, author, messageText);
+        string text = messageText.Trim();
+        if (text.StartsWith('/'))
+        {
+            string[] parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (!User.IsInRole("Developer") || parts.Length != 2 || parts[0] != "/deadline"
+                || !DateOnly.TryParseExact(parts[1], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly deadline)
+                || deadline < DateOnly.FromDateTime(DateTime.Today))
+            {
+                TempData["ChatError"] = "Developers can request a future or current date using /deadline YYYY-MM-DD.";
+                return RedirectToAction("Index", new { dealId, requirementId });
+            }
+            messageCollection.SendDeadlineRequest(requirementId, author, deadline);
+        }
+        else
+        {
+            messageCollection.SendMessage(requirementId, author, text);
+        }
 
+        return RedirectToAction("Index", new { dealId, requirementId });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Sales")]
+    [ValidateAntiForgeryToken]
+    public IActionResult AdaptDeadline(Guid dealId, Guid requirementId, Guid messageId)
+    {
+        DealResponseDto? deal = dealCollection.GetById(dealId);
+        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        MessageResponseDto? message = messageCollection.GetMessageById(messageId);
+        if (deal is null || requirement is null || requirement.DealId != dealId || message is null || message.RequirementId != requirementId)
+            return NotFound();
+        if (message.RequestedDeadline is not DateOnly deadline || message.DeadlineAdapted
+            || deal.Status == "Completed")
+        {
+            TempData["ChatError"] = "This deadline request can no longer be adapted.";
+            return RedirectToAction("Index", new { dealId, requirementId });
+        }
+
+        dealCollection.UpdateDealDetails(dealId, deal.Title, deal.Customer, deal.Description, deadline);
+        requirementCollection.UpdateDeadline(requirementId, deadline);
+        messageCollection.AdaptDeadlineRequest(messageId);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 

@@ -7,6 +7,8 @@ public sealed class Message
     public string Author { get; private set; }
     public string Text { get; private set; }
     public DateTime SentAt { get; private set; }
+    public DateOnly? RequestedDeadline { get; private set; }
+    public bool DeadlineAdapted { get; private set; }
 
     private Message(Guid id, Guid requirementId, string author, string text, DateTime sentAt)
     {
@@ -42,5 +44,19 @@ public sealed class Message
             throw new ArgumentException("A message needs text content.");
 
         Text = newText.Trim();
+    }
+
+    public static Message CreateDeadlineRequest(Guid requirementId, string author, DateOnly deadline)
+    {
+        Message message = Create(requirementId, author, $"Requested deadline: {deadline:yyyy-MM-dd}");
+        message.RequestedDeadline = deadline;
+        return message;
+    }
+
+    public void AdaptDeadline()
+    {
+        if (RequestedDeadline is null || DeadlineAdapted)
+            throw new InvalidOperationException("The deadline request is not pending.");
+        DeadlineAdapted = true;
     }
 }

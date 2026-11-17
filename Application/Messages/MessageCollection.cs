@@ -20,6 +20,19 @@ internal sealed class MessageCollection(IMessageRepository messageRepository) : 
         messageRepository.Add(newMessage);
     }
 
+    public void SendDeadlineRequest(Guid requirementId, string author, DateOnly deadline)
+    {
+        messageRepository.Add(Message.CreateDeadlineRequest(requirementId, author, deadline));
+    }
+
+    public void AdaptDeadlineRequest(Guid messageId)
+    {
+        Message message = messageRepository.GetById(messageId)
+            ?? throw new InvalidOperationException($"Message with ID {messageId} not found.");
+        message.AdaptDeadline();
+        messageRepository.Update(message);
+    }
+
     public void UpdateMessage(Guid messageId, string newText)
     {
         Message? message = messageRepository.GetById(messageId);
@@ -46,7 +59,9 @@ internal sealed class MessageCollection(IMessageRepository messageRepository) : 
             message.RequirementId,
             message.Author,
             message.Text,
-            message.SentAt
+            message.SentAt,
+            message.RequestedDeadline,
+            message.DeadlineAdapted
         );
     }
 }

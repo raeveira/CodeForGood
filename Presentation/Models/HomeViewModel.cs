@@ -11,7 +11,9 @@ public record HomeViewModel(
     RequirementResponseDto? SelectedRequirement,
     IReadOnlyList<MessageResponseDto> MessagesForRequirement,
     IReadOnlyList<DealSortOption> SortOptions,
-    string ActiveSort
+    string ActiveSort,
+    IReadOnlyDictionary<Guid, AttentionInfo> DealAttention,
+    IReadOnlyDictionary<Guid, AttentionInfo> RequirementAttention
 );
 
 

@@ -5,6 +5,8 @@ public sealed record MessageResponseDto(
     Guid RequirementId,
     string Author,
     string Text,
-    DateTime SentAt
+    DateTime SentAt,
+    DateOnly? RequestedDeadline,
+    bool DeadlineAdapted
 );
 

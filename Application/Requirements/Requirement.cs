@@ -9,6 +9,7 @@ public sealed class Requirement
     public ERequirementType Type { get; private set; }
     public ERequirementPriority Priority { get; private set; }
     public IReadOnlyList<string> Modules { get; private set; }
+    public DateOnly? Deadline { get; private set; }
 
     private Requirement(Guid id, Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
     {
@@ -67,5 +68,10 @@ public sealed class Requirement
         Type = type;
         Priority = priority;
         Modules = validModules.AsReadOnly();
+    }
+
+    public void UpdateDeadline(DateOnly deadline)
+    {
+        Deadline = deadline;
     }
 }

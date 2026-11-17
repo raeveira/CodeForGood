@@ -3,11 +3,9 @@ namespace Application.Deals;
 
 internal sealed class DealCollection(IDealRepository dealRepository) : IDealCollection
 {
-    private readonly List<Deal> deals = dealRepository.GetAll().ToList();
-
     public IReadOnlyList<DealResponseDto> GetAll()
     {
-        return deals.Select(ConvertToDto).ToList();
+        return dealRepository.GetAll().Select(ConvertToDto).ToList();
     }
 
     public DealResponseDto? GetById(Guid dealId)

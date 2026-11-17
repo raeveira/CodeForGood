@@ -45,8 +45,9 @@
                 <div class="RequirementsListGrid">
                     @foreach (Application.Requirements.RequirementResponseDto requirement in requirementsOfDeal)
                     {
-                        <a asp-action="Index" asp-route-dealId="@dealId" asp-route-requirementId="@requirement.Id" class="RequirementCard">
+                        <a asp-action="Index" asp-route-dealId="@dealId" asp-route-requirementId="@requirement.Id" class="RequirementCard" data-requirement-id="@requirement.Id" data-attention-events="@System.Text.Json.JsonSerializer.Serialize(Model.RequirementAttention[requirement.Id].Events)" data-attention-pending="@Model.RequirementAttention[requirement.Id].PendingDeadline.ToString().ToLowerInvariant()">
                             <p class="RequirementTitle">@requirement.Title</p>
+                            <span class="AttentionBadge" hidden>Needs attention</span>
                             <p class="RequirementDescription">@requirement.Description</p>
                             
                             <div class="RequirementPills">
@@ -64,7 +65,7 @@
         
         @if (selectedRequirement is not null)
         {
-            <div class="DealChat">
+            <div class="DealChat" data-current-requirement-events="@System.Text.Json.JsonSerializer.Serialize(Model.RequirementAttention[selectedRequirement.Id].Events)">
                 <div class="DealTitle">
                     <div class="DealTitleColumn">
                         <a asp-action="Index" asp-route-dealId="@dealId" class="BackButton">
@@ -100,6 +101,19 @@
                                 <time datetime="@chatMessage.SentAt.ToString(format: "s")">@chatMessage.SentAt.ToString("dd MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)</time>
                             </div>
                             <p>@chatMessage.Text</p>
+                            @if (chatMessage.RequestedDeadline is not null)
+                            {
+                                <p>@(chatMessage.DeadlineAdapted ? "Deadline adapted" : "Deadline request pending")</p>
+                                @if (!chatMessage.DeadlineAdapted && User.IsInRole("Sales"))
+                                {
+                                    <form method="post" asp-action="AdaptDeadline">
+                                        <input type="hidden" name="dealId" value="@dealId" />
+                                        <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
+                                        <input type="hidden" name="messageId" value="@chatMessage.Id" />
+                                        <button type="submit" class="ModalBtn ModalSubmitBtn">Adapt</button>
+                                    </form>
+                                }
+                            }
                         </div>
                     }
                     @if (!selectedMessages.Any())
@@ -108,10 +122,24 @@
                     }
                 </div>
                 
+                @if (TempData["ChatError"] is string chatError)
+                {
+                    <p class="text-danger" role="alert">@chatError</p>
+                }
                 <form method="post" asp-action="SendMessage">
                     <input type="hidden" name="dealId" value="@dealId" />
                     <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
                     <div class="InputField">
+                        @if (User.IsInRole("Developer"))
+                        {
+                            <div class="SlashCommandPopup" id="slashCommandPopup" role="group" aria-label="Available chat commands" hidden>
+                                <button type="button" class="SlashCommandOption" id="deadlineCommand">
+                                    <strong>/deadline</strong>
+                                    <span>Request a new deadline</span>
+                                    <small>YYYY-MM-DD</small>
+                                </button>
+                            </div>
+                        }
                         <textarea name="messageText" rows="1" placeholder="Type a message..." oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"></textarea>
                         <button type="submit">Send</button>
                     </div>
@@ -155,6 +183,7 @@
             <div class="Divider"></div>
             <div class="RequirementModulesSection">
                 <h5><strong>Requirement Info:</strong></h5>
+                <p><strong>Deadline:</strong> @(selectedRequirement.Deadline?.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture) ?? "Not set")</p>
                 <div class="ModulesHeader">
                     <strong>Company Module(s):</strong>
                     @if (User.IsInRole("Developer"))

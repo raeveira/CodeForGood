@@ -1,5 +1,21 @@
 # Code for Good Sales to Dev
 
+## Attention and deadline requests
+
+Deals and requirements show an attention badge for new items and messages from the other role.
+Opening a deal marks the deal as seen; opening a requirement marks its messages and the
+requirement as seen. Read state is saved per signed-in username in the current browser.
+Indicators update on page navigation or reload.
+
+In a requirement chat, a developer can send `/deadline YYYY-MM-DD` to request a new
+deadline. Typing `/` shows the command suggestion; select it or press Enter to insert it.
+Sales can choose **Adapt** on the request to update both the deal's expected
+end date and that requirement's deadline. A pending request continues to need Sales'
+attention until adapted.
+
+Deals, requirements, messages, and requests currently use in-memory mock repositories
+and reset when the application restarts. Browser read state does not sync across devices.
+
 
 
 ## Getting started

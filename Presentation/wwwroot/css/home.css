@@ -205,6 +205,21 @@
     font-size: 0.9rem;
 }
 
+.AttentionBadge {
+    display: inline-block;
+    margin: 0.25rem 0;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.5rem;
+    background: #fff3cd;
+    color: #664d03;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.AttentionBadge[hidden] {
+    display: none;
+}
+
 @media screen and (max-width: 768px) {
     .HomeMain {
         flex-direction: column;
@@ -762,11 +777,55 @@
 }
 
 .InputField {
+    position: relative;
     display: flex;
     gap: 0.5rem;
     padding: 1.5rem;
     background-color: #F5F5F5;
     border-top: 1px solid #D9D9D9;
+}
+
+.SlashCommandPopup {
+    position: absolute;
+    bottom: 100%;
+    left: 1.5rem;
+    right: 1.5rem;
+    max-width: 420px;
+    padding: 0.4rem;
+    border: 1px solid #D9D9D9;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+.SlashCommandPopup[hidden] {
+    display: none;
+}
+
+.InputField .SlashCommandOption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    color: #222;
+    text-align: left;
+    white-space: normal;
+}
+
+.InputField .SlashCommandOption:hover,
+.InputField .SlashCommandOption:focus-visible {
+    background: #f0eff3;
+    outline: 2px solid #646274;
+    outline-offset: -2px;
+}
+
+.SlashCommandOption span,
+.SlashCommandOption small {
+    color: #666;
 }
 
 .InputField textarea {

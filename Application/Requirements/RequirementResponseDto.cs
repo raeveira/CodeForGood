@@ -7,5 +7,6 @@ public sealed record RequirementResponseDto(
     string Description,
     string Type,
     string Priority,
-    IReadOnlyList<string> Modules
+    IReadOnlyList<string> Modules,
+    DateOnly? Deadline
 );
