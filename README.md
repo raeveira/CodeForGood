@@ -16,8 +16,6 @@ attention until adapted.
 Deals, requirements, messages, and requests currently use in-memory mock repositories
 and reset when the application restarts. Browser read state does not sync across devices.
 
-
-
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.

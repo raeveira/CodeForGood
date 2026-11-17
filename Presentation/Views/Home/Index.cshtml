@@ -10,6 +10,10 @@
     <partial name="_CreateDealModal" model="Model" />
 }
 
+@section Head {
+    <script src="~/js/deals-sidebar-resize.js" asp-append-version="true"></script>
+}
+
 <main class="HomeMain" data-attention-user="@User.Identity?.Name" data-selected-deal="@Model.SelectedDeal?.Id" data-selected-requirement="@Model.SelectedRequirement?.Id">
     <div class="Sidebar" id="dealsSidebar">
         @if (User.IsInRole("Sales"))
@@ -141,7 +145,6 @@
 </main>
 
 @section Scripts {
-    <script src="~/js/deals-sidebar-resize.js" asp-append-version="true"></script>
     <script src="~/js/deals-attention.js" asp-append-version="true"></script>
     <script src="~/js/chat-commands.js" asp-append-version="true"></script>
     <script>

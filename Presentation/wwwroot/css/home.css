@@ -170,13 +170,14 @@
 }
 
 .HomeMain {
+    --sidebar-resize-handle-width: 2px;
     display: flex;
     height: calc(100vh - 70px);
     gap: 0;
 }
 
 .Sidebar {
-    flex: 0 0 var(--sidebar-width, 300px);
+    flex: 0 0 clamp(240px, var(--sidebar-width, 300px), max(240px, min(600px, calc(100% - 450px - var(--sidebar-resize-handle-width)))));
         min-width: 0;
     background-color: #FAFAFA;
     overflow-y: auto;
@@ -184,7 +185,7 @@
 }
 
 .SidebarResizeHandle {
-    flex: 0 0 2px;
+    flex: 0 0 var(--sidebar-resize-handle-width);
     background-color: #D9D9D9;
     cursor: col-resize;
     touch-action: none;
@@ -423,6 +424,7 @@
     border: 1px solid #D9D9D9;
     border-radius: 1rem;
     padding: 0.25rem 0.5rem;
+    max-height: 2rem;
 }
 .DealBodyHeading {
     font-size: 0.8rem;
