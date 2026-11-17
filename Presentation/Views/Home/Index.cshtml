@@ -11,7 +11,7 @@
 }
 
 <main class="HomeMain">
-    <div class="Sidebar">
+    <div class="Sidebar" id="dealsSidebar">
         @if (User.IsInRole("Sales"))
         {
             <h3>Sales Environment</h3>
@@ -24,17 +24,71 @@
         <div class="DealHeader">
             <h2>Deals</h2>
             
-            @if (User.IsInRole(role: "Sales"))
-            {
-                <form method="post" asp-action="OpenCreateDealModal" style="display: inline;">
+            <div class="DealHeaderActions">
+                <button type="button" class="AddDealBtn" id="openSortModal" aria-label="Sort deals" title="Sort deals">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6" /><line x1="7" y1="12" x2="17" y2="12" /><line x1="10" y1="18" x2="14" y2="18" /></svg>
+                </button>
+
+                @if (User.IsInRole(role: "Sales"))
+                {
+                    <form method="post" asp-action="OpenCreateDealModal" style="display: inline;">
+                        <input type="hidden" name="dealId" value="@Model.SelectedDeal?.Id" />
+                        <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
+                        <button type="submit" class="AddDealBtn">
+                            <img src="~/images/Plus.svg" alt="Add Deal" style="height: 16px;" />
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <dialog class="Modal" id="sortModal" aria-labelledby="sortModalTitle">
+            <div class="ModalContent">
+                <div class="ModalHeader">
+                    <h3 id="sortModalTitle">Sort deals</h3>
+                    <button type="button" class="ModalCloseBtn" id="closeSortModal" aria-label="Close">×</button>
+                </div>
+                <form method="get" asp-action="Index" class="ModalForm">
                     <input type="hidden" name="dealId" value="@Model.SelectedDeal?.Id" />
                     <input type="hidden" name="requirementId" value="@Model.SelectedRequirement?.Id" />
-                    <button type="submit" class="AddDealBtn">
-                        <img src="~/images/Plus.svg" alt="Add Deal" style="height: 16px;" />
-                    </button>
+                    @foreach (IGrouping<string, DealSortOption> group in Model.SortOptions.GroupBy(option => option.Group))
+                    {
+                        <fieldset class="SortGroup">
+                            <legend>@group.Key</legend>
+                            <div class="SortChoices">
+                                @foreach (DealSortOption option in group)
+                                {
+                                    <label class="SortChoice">
+                                        <input type="radio" name="sort" value="@option.Key" checked="@(option.Key == Model.ActiveSort)" />
+                                        <span>@option.Label</span>
+                                    </label>
+                                }
+                            </div>
+                        </fieldset>
+                    }
+                    <fieldset class="SortGroup">
+                        <legend>Show statuses</legend>
+                        <label class="StatusToggleAll">
+                            <input type="checkbox" id="statusSelectAll" checked />
+                            <span>Select / unselect all</span>
+                        </label>
+                        <div class="SortChoices">
+                            @foreach (string statusName in Enum.GetNames<DealStatus>())
+                            {
+                                <label class="SortChoice">
+                                    <input type="checkbox" class="StatusFilter" value="@statusName" checked />
+                                    <span>@System.Text.RegularExpressions.Regex.Replace(statusName, "(?<=[a-z])(?=[A-Z])", " ")</span>
+                                </label>
+                            }
+                        </div>
+                    </fieldset>
+                    <div class="ModalActions">
+                        <button type="button" class="ModalBtn ModalCancelBtn" id="cancelSortModal">Cancel</button>
+                        <button type="submit" class="ModalBtn ModalSubmitBtn">Apply</button>
+                    </div>
                 </form>
-            }
-        </div>
+            </div>
+        </dialog>
             
         <div class="Divider"></div>
         
@@ -42,7 +96,7 @@
         <div class="DealsCards">
             @foreach (DealResponseDto deal in Model.Deals)
             {
-                <a asp-action="Index" asp-route-dealId="@deal.Id" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "") @(deal.Status.Equals("Completed", StringComparison.Ordinal) ? "Completed" : deal.Status.Equals("In Progress", StringComparison.Ordinal) ? "InProgress" : deal.Status.Equals("Open", StringComparison.Ordinal) ? "Open" : "")">
+                <a asp-action="Index" asp-route-dealId="@deal.Id" asp-route-sort="@Model.ActiveSort" class="DealCard @(deal.Id == Model.SelectedDeal?.Id ? "Selected" : "") @deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)" data-status="@deal.Status.Replace(" ", string.Empty, StringComparison.Ordinal)">
                     <div class="DealHeading">
                         <div class="DealHeadingLeft">
                             <h4>@deal.Title</h4>
@@ -61,7 +115,13 @@
                 </a>
             }
         </div>
+        <p class="NoDealsMessage" id="noDealsMessage" hidden>No deals match the selected statuses.</p>
+        <p class="SidebarResizeError" id="sidebarResizeError" role="status" hidden></p>
     </div>
+
+    <div class="SidebarResizeHandle" id="sidebarResizeHandle" role="separator" aria-label="Resize deals list"
+         aria-controls="dealsSidebar" aria-orientation="vertical" aria-valuemin="240" aria-valuemax="600"
+         aria-valuenow="300" tabindex="0" title="Drag or use arrow keys to resize the deals list"></div>
 
     <div class="HomeContent">
         @if (Model.SelectedDeal is null)
@@ -77,3 +137,72 @@
     </div>
     
 </main>
+
+@section Scripts {
+    <script src="~/js/deals-sidebar-resize.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            const SORT_KEY = 'dealSort';
+            const HIDDEN_KEY = 'dealHiddenStatuses';
+            const modal = document.getElementById('sortModal');
+            const form = modal.querySelector('form');
+            const filters = [...modal.querySelectorAll('.StatusFilter')];
+            const selectAll = document.getElementById('statusSelectAll');
+            const cards = [...document.querySelectorAll('.DealCard')];
+            const emptyMessage = document.getElementById('noDealsMessage');
+
+            const readHidden = () => {
+                try { return JSON.parse(localStorage.getItem(HIDDEN_KEY)) || []; } catch { return []; }
+            };
+
+            // Restore the saved sort when the URL doesn't specify one.
+            const url = new URL(window.location.href);
+            const savedSort = localStorage.getItem(SORT_KEY);
+            if (!url.searchParams.has('sort') && savedSort && savedSort !== 'default') {
+                url.searchParams.set('sort', savedSort);
+                window.location.replace(url);
+                return;
+            }
+            if (url.searchParams.has('sort')) {
+                localStorage.setItem(SORT_KEY, url.searchParams.get('sort'));
+            }
+
+            const syncSelectAll = () => {
+                const checked = filters.filter(f => f.checked).length;
+                selectAll.checked = checked === filters.length;
+                selectAll.indeterminate = checked > 0 && checked < filters.length;
+            };
+
+            const applyFilter = () => {
+                const hidden = readHidden();
+                let visible = 0;
+                cards.forEach(card => {
+                    const isHidden = hidden.includes(card.dataset.status);
+                    card.hidden = isHidden;
+                    if (!isHidden) visible++;
+                });
+                emptyMessage.hidden = visible > 0 || cards.length === 0;
+                filters.forEach(f => f.checked = !hidden.includes(f.value));
+                syncSelectAll();
+            };
+
+            selectAll.addEventListener('change', () => {
+                filters.forEach(f => f.checked = selectAll.checked);
+                syncSelectAll();
+            });
+            filters.forEach(f => f.addEventListener('change', syncSelectAll));
+
+            form.addEventListener('submit', () => {
+                localStorage.setItem(HIDDEN_KEY, JSON.stringify(filters.filter(f => !f.checked).map(f => f.value)));
+                const sort = form.querySelector('input[name="sort"]:checked');
+                if (sort) localStorage.setItem(SORT_KEY, sort.value);
+            });
+
+            document.getElementById('openSortModal').addEventListener('click', () => modal.showModal());
+            document.getElementById('closeSortModal').addEventListener('click', () => { applyFilter(); modal.close(); });
+            document.getElementById('cancelSortModal').addEventListener('click', () => { applyFilter(); modal.close(); });
+
+            applyFilter();
+        })();
+    </script>
+}

@@ -32,7 +32,7 @@ public sealed class Deal
             throw new ArgumentException("The end date cannot be in the past.");
 
         Guid generatedId = Guid.NewGuid();
-        return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.Open, DateTime.Now);
+        return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.TalkingStage, DateTime.Now);
     }
 
     public void UpdateDetails(string title, string customer, string description, DateOnly endDate)
@@ -52,17 +52,49 @@ public sealed class Deal
 
     public void StartProgress()
     {
-        if (Status != DealStatus.Open)
-            throw new InvalidOperationException("Only an open deal can be started.");
+        if (Status != DealStatus.TalkingStage)
+            throw new InvalidOperationException("Only a deal in the talking stage can be started.");
 
-        Status = DealStatus.InProgress;
+        Status = DealStatus.DiscussionStage;
     }
 
     public void Complete()
     {
-        if (Status != DealStatus.InProgress)
-            throw new InvalidOperationException("Only a deal in progress can be completed.");
+        if (Status != DealStatus.DiscussionStage)
+            throw new InvalidOperationException("Only a deal in the discussion stage can be completed.");
+
+        Status = DealStatus.OpenForDevelopment;
+    }
+
+    public void StartDevelopment()
+    {
+        if (Status != DealStatus.OpenForDevelopment)
+            throw new InvalidOperationException("Only a deal open for development can be started.");
+
+        Status = DealStatus.InDevelopment;
+    }
+
+    public void CompleteDevelopment()
+    {
+        if (Status != DealStatus.InDevelopment)
+            throw new InvalidOperationException("Only a deal in development can be completed.");
+
+        Status = DealStatus.AwaitingApproval;
+    }
+
+    public void Approve()
+    {
+        if (Status != DealStatus.AwaitingApproval)
+            throw new InvalidOperationException("Only a deal awaiting approval can be approved.");
 
         Status = DealStatus.Completed;
+    }
+
+    public void Archive()
+    {
+        if (Status != DealStatus.Completed)
+            throw new InvalidOperationException("Only a completed deal can be archived.");
+
+        Status = DealStatus.Archived;
     }
 }

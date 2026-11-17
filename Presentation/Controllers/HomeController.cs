@@ -23,7 +23,7 @@ public class HomeController : Controller
         this.messageCollection = messageCollection;
     }
 
-    public IActionResult Index(Guid? dealId, Guid? requirementId, bool showCreateDealModal = false, bool showCreateRequirementModal = false, bool showUpdateRequirementModal = false, bool showUpdateDealModal = false)
+    public IActionResult Index(Guid? dealId, Guid? requirementId, bool showCreateDealModal = false, bool showCreateRequirementModal = false, bool showUpdateRequirementModal = false,     bool showUpdateDealModal = false, string? sort = null)
     {
         ViewData["ShowUpdateDealModal"] = showUpdateDealModal && dealId is not null && User.IsInRole("Sales");
         ViewData["ShowCreateDealModal"] = showCreateDealModal && User.IsInRole("Sales");
@@ -44,24 +44,17 @@ public class HomeController : Controller
             ? new List<MessageResponseDto>()
             : messageCollection.GetMessagesForRequirement(selectedRequirement.Id);
 
-        // Sort deals by creation date, newest first
-        // then sort deals by their status, in progress -> open -> completed 
-        IReadOnlyList<DealResponseDto> sortedDeals = [.. dealCollection.GetAll().OrderByDescending(deal => deal.CreatedAt).ToList().OrderBy(deal =>
-            Convert.ToString(deal.Status)?.Replace(" ", string.Empty).ToLowerInvariant() switch
-            {
-                "inprogress" => 0,
-                "open" => 1,
-                "completed" => 2,
-                _ => 3
-            })];
-
+        IReadOnlyList<DealSortOption> sortOptions = DealSortOption.GetAll();
+        DealSortOption activeSort = sortOptions.FirstOrDefault(option => option.Key == sort) ?? sortOptions[0];
 
         HomeViewModel viewModel = new HomeViewModel(
-            sortedDeals,
+            activeSort.Apply(dealCollection.GetAll()),
             selectedDeal,
             requirementsForDeal,
             selectedRequirement,
-            messagesForRequirement
+            messagesForRequirement,
+            sortOptions,
+            activeSort.Key
         );
 
         return View(viewModel);

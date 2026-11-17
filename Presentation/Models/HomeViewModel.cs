@@ -9,7 +9,9 @@ public record HomeViewModel(
     DealResponseDto? SelectedDeal,
     IReadOnlyList<RequirementResponseDto> RequirementsForDeal,
     RequirementResponseDto? SelectedRequirement,
-    IReadOnlyList<MessageResponseDto> MessagesForRequirement
+    IReadOnlyList<MessageResponseDto> MessagesForRequirement,
+    IReadOnlyList<DealSortOption> SortOptions,
+    string ActiveSort
 );
 
 

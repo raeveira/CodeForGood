@@ -61,13 +61,57 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
         dealRepository.Update(deal);
     }
 
+    public void StartDevelopment(Guid dealId)
+    {
+        Deal? deal = dealRepository.GetById(dealId);
+        if (deal is null)
+            throw new InvalidOperationException($"Deal with ID {dealId} not found.");
+
+        deal.StartDevelopment();
+        dealRepository.Update(deal);
+    }
+
+    public void CompleteDevelopment(Guid dealId)
+    {
+        Deal? deal = dealRepository.GetById(dealId);
+        if (deal is null)
+            throw new InvalidOperationException($"Deal with ID {dealId} not found.");
+
+        deal.CompleteDevelopment();
+        dealRepository.Update(deal);
+    }
+
+    public void ApproveDeal(Guid dealId)
+    {
+        Deal? deal = dealRepository.GetById(dealId);
+        if (deal is null)
+            throw new InvalidOperationException($"Deal with ID {dealId} not found.");
+
+        deal.Approve();
+        dealRepository.Update(deal);
+    }
+
+    public void ArchiveDeal(Guid dealId)
+    {
+        Deal? deal = dealRepository.GetById(dealId);
+        if (deal is null)
+            throw new InvalidOperationException($"Deal with ID {dealId} not found.");
+
+        deal.Archive();
+        dealRepository.Update(deal);
+    }
+
     private static DealResponseDto ConvertToDto(Deal deal)
     {
         string statusDisplay = deal.Status switch
         {
-            DealStatus.Open => "Open",
-            DealStatus.InProgress => "In Progress",
+            DealStatus.TalkingStage => "Talking Stage",
+            DealStatus.DiscussionStage => "Discussion Stage",
+            DealStatus.OpenForDevelopment => "Open for Development",
+            DealStatus.InDevelopment => "In Development",
+            DealStatus.AwaitingApproval => "Awaiting Approval",
             DealStatus.Completed => "Completed",
+            DealStatus.Archived => "Archived",
             _ => deal.Status.ToString()
         };
 

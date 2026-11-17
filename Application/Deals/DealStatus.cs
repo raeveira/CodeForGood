@@ -2,7 +2,11 @@ namespace Application.Deals;
 
 public enum DealStatus
 {
-    Open,
-    InProgress,
-    Completed
+    TalkingStage,
+    DiscussionStage,
+    OpenForDevelopment,
+    InDevelopment,
+    AwaitingApproval,
+    Completed,
+    Archived
 }
