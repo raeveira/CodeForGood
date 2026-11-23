@@ -8,10 +8,10 @@ public sealed class Requirement
     public string Description { get; private set; }
     public ERequirementType Type { get; private set; }
     public ERequirementPriority Priority { get; private set; }
-    public IReadOnlyList<string> Modules { get; private set; }
+    public IReadOnlyList<Guid> ModuleIds { get; private set; }
     public DateOnly? Deadline { get; private set; }
 
-    private Requirement(Guid id, Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
+    private Requirement(Guid id, Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<Guid> moduleIds)
     {
         Id = id;
         DealId = dealId;
@@ -19,10 +19,10 @@ public sealed class Requirement
         Description = description;
         Type = type;
         Priority = priority;
-        Modules = modules.AsReadOnly();
+        ModuleIds = moduleIds.Distinct().ToList().AsReadOnly();
     }
 
-    public static Requirement Create(Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
+    public static Requirement Create(Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<Guid> moduleIds)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("A requirement needs a title.");
@@ -31,12 +31,6 @@ public sealed class Requirement
 
         Guid generatedId = Guid.NewGuid();
 
-        List<string> validModules = modules
-            .Where(module => !string.IsNullOrWhiteSpace(module))
-            .Select(module => module.Trim())
-            .Distinct()
-            .ToList();
-
         return new Requirement(
             generatedId,
             dealId,
@@ -44,30 +38,25 @@ public sealed class Requirement
             description.Trim(),
             type,
             priority,
-            validModules
+            moduleIds
         );
     }
 
-    public void UpdateDetails(string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
+    public void UpdateDetails(string title, string description, ERequirementType type, ERequirementPriority priority)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("A requirement needs a title.");
         if (string.IsNullOrWhiteSpace(description))
             throw new ArgumentException("A requirement needs a description.");
-        if (modules is null || modules.Count == 0)
-            throw new ArgumentException("A requirement needs at least one module.");
-
-        List<string> validModules = modules
-            .Where(module => !string.IsNullOrWhiteSpace(module))
-            .Select(module => module.Trim())
-            .Distinct()
-            .ToList();
-
         Title = title.Trim();
         Description = description.Trim();
         Type = type;
         Priority = priority;
-        Modules = validModules.AsReadOnly();
+    }
+
+    public void UpdateModules(IEnumerable<Guid> moduleIds)
+    {
+        ModuleIds = moduleIds.Distinct().ToList().AsReadOnly();
     }
 
     public void UpdateDeadline(DateOnly deadline)

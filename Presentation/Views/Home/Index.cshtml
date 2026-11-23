@@ -118,8 +118,8 @@
 
                     <div class="Divider"></div>
 
-                    <p class="DealBodyHeading">Expected end date</p>
-                    <p class="DealBodyDates">@deal.EndDate.ToString("dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+                    <p class="DealBodyHeading">Estimated Deadline</p>
+                    <p class="DealBodyDates">@deal.EstimatedDeadline.ToString("dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
                 </a>
             }
         </div>
@@ -141,7 +141,7 @@
         
         @if (Model.SelectedDeal is not null) 
         { 
-            <partial name="_DealDetails" model="new DealDetailsViewModel(Model.SelectedDeal, Model.RequirementsForDeal, Model.SelectedRequirement, Model.MessagesForRequirement, Model.RequirementAttention)" />
+            <partial name="_DealDetails" model="new DealDetailsViewModel(Model.SelectedDeal, Model.RequirementsForDeal, Model.SelectedRequirement, Model.MessagesForRequirement, Model.RequirementAttention, Model.AvailableModules)" />
         }
         
     </div>

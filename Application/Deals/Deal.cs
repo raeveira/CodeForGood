@@ -7,35 +7,34 @@ public sealed class Deal
     public string Title { get; private set; }
     public string Customer { get; private set; }
     public string Description { get; private set; }
-    public DateOnly EndDate { get; private set; }
+    public DateOnly EstimatedDeadline { get; private set; }
     public DealStatus Status { get; private set; }
     public DateTime CreatedAt { get; }
 
-    private Deal(Guid id, string title, string customer, string description, DateOnly endDate, DealStatus status, DateTime createdAt)
+    private Deal(string title, string customer, string description, DateOnly estimatedDeadline)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         Title = title;
         Customer = customer;
         Description = description;
-        EndDate = endDate;
-        Status = status;
-        CreatedAt = createdAt;
+        EstimatedDeadline = estimatedDeadline;
+        Status = DealStatus.TalkingStage;
+        CreatedAt = DateTime.Now;
     }
 
-    public static Deal Create(string title, string customer, string description, DateOnly endDate)
+    public static Deal Create(string title, string customer, string description, DateOnly estimatedDeadline)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("A deal needs a title.");
         if (string.IsNullOrWhiteSpace(customer))
             throw new ArgumentException("A deal needs a customer.");
-        if (endDate < DateOnly.FromDateTime(DateTime.Now))
+        if (estimatedDeadline < DateOnly.FromDateTime(DateTime.Now))
             throw new ArgumentException("The end date cannot be in the past.");
 
-        Guid generatedId = Guid.NewGuid();
-        return new Deal(generatedId, title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, endDate, DealStatus.TalkingStage, DateTime.Now);
+        return new Deal(title.Trim(), customer.Trim(), description?.Trim() ?? string.Empty, estimatedDeadline);
     }
 
-    public void UpdateDetails(string title, string customer, string description, DateOnly endDate)
+    public void UpdateDetails(string title, string customer, string description, DateOnly estimatedDeadline)
     {
         if (Status == DealStatus.Completed)
             throw new InvalidOperationException("A completed deal cannot be changed.");
@@ -47,7 +46,7 @@ public sealed class Deal
         Title = title.Trim();
         Customer = customer.Trim();
         Description = description?.Trim() ?? string.Empty;
-        EndDate = endDate;
+        EstimatedDeadline = estimatedDeadline;
     }
 
     public void StartProgress()

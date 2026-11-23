@@ -2,7 +2,7 @@ using Application.Requirements;
 
 namespace Application.Requirements;
 
-internal sealed class RequirementCollection(IRequirementRepository requirementRepository) : IRequirementCollection
+internal sealed class RequirementCollection(IRequirementRepository requirementRepository, IModuleRepository moduleRepository) : IRequirementCollection
 {
     public IReadOnlyList<RequirementResponseDto> GetRequirementsForDeal(Guid dealId)
     {
@@ -16,19 +16,30 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
         return requirement is null ? null : ConvertToDto(requirement);
     }
 
-    public void CreateRequirement(Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
+    public void CreateRequirement(Guid dealId, string title, string description, ERequirementType type, ERequirementPriority priority)
     {
-        Requirement newRequirement = Requirement.Create(dealId, title, description, type, priority, modules);
+        Requirement newRequirement = Requirement.Create(dealId, title, description, type, priority, []);
         requirementRepository.Add(newRequirement);
     }
 
-    public void UpdateRequirement(Guid requirementId, string title, string description, ERequirementType type, ERequirementPriority priority, List<string> modules)
+    public void UpdateRequirement(Guid requirementId, string title, string description, ERequirementType type, ERequirementPriority priority)
     {
         Requirement? requirement = requirementRepository.GetById(requirementId);
         if (requirement is null)
             throw new InvalidOperationException($"Requirement with ID {requirementId} not found.");
 
-        requirement.UpdateDetails(title, description, type, priority, modules);
+        requirement.UpdateDetails(title, description, type, priority);
+        requirementRepository.Update(requirement);
+    }
+
+    public void UpdateModules(Guid requirementId, IEnumerable<Guid> moduleIds)
+    {
+        Requirement requirement = requirementRepository.GetById(requirementId)
+            ?? throw new InvalidOperationException($"Requirement with ID {requirementId} not found.");
+        List<Guid> ids = moduleIds.Distinct().ToList();
+        if (ids.Any(id => moduleRepository.GetById(id) is null))
+            throw new ArgumentException("One or more modules no longer exist.", nameof(moduleIds));
+        requirement.UpdateModules(ids);
         requirementRepository.Update(requirement);
     }
 
@@ -49,7 +60,7 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
         requirementRepository.Update(requirement);
     }
 
-    private static RequirementResponseDto ConvertToDto(Requirement requirement)
+    private RequirementResponseDto ConvertToDto(Requirement requirement)
     {
         string typeDisplay = requirement.Type switch
         {
@@ -74,7 +85,8 @@ internal sealed class RequirementCollection(IRequirementRepository requirementRe
             requirement.Description,
             typeDisplay,
             priorityDisplay,
-            requirement.Modules,
+            requirement.ModuleIds.Select(id => moduleRepository.GetById(id)
+                ?? throw new InvalidOperationException($"Module with ID {id} not found.")).ToList(),
             requirement.Deadline
         );
     }

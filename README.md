@@ -22,6 +22,17 @@ attention until adapted.
 Deals, requirements, messages, and requests currently use in-memory mock repositories
 and reset when the application restarts. Browser read state does not sync across devices.
 
+## Modules
+
+Developers can create, edit and delete modules from the Modules page. Integration
+complexity describes the expected work: **Plug and play** is ready to use,
+**Configuration needed** requires setup, and **Custom integration** requires
+development work. Modules use an in-memory repository and reset on application restart.
+The current role-based login is a mock and is not production authentication.
+Developers can select multiple existing modules in the requirement details.
+Module renames are reflected on requirements; remove a module from every requirement
+before deleting it. The mock data includes five sample modules.
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.

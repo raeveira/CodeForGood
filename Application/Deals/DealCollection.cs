@@ -14,19 +14,19 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
         return deal is null ? null : ConvertToDto(deal);
     }
 
-    public void Create(string title, string customer, string description, DateOnly endDate)
+    public void Create(string title, string customer, string description, DateOnly estimatedDeadline)
     {
-        Deal newDeal = Deal.Create(title, customer, description, endDate);
+        Deal newDeal = Deal.Create(title, customer, description, estimatedDeadline);
         dealRepository.Add(newDeal);
     }
 
-    public void UpdateDealDetails(Guid dealId, string title, string customer, string description, DateOnly endDate)
+    public void UpdateDealDetails(Guid dealId, string title, string customer, string description, DateOnly estimatedDeadline)
     {
         Deal? deal = dealRepository.GetById(dealId);
         if (deal is null)
             throw new InvalidOperationException($"Deal with ID {dealId} not found.");
 
-        deal.UpdateDetails(title, customer, description, endDate);
+        deal.UpdateDetails(title, customer, description, estimatedDeadline);
         dealRepository.Update(deal);
     }
 
@@ -120,7 +120,7 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
             Status: statusDisplay,
             Description: deal.Description,
             CreatedAt: deal.CreatedAt,
-            EndDate: deal.EndDate
+            EstimatedDeadline: deal.EstimatedDeadline
         );
     }
 }

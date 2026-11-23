@@ -10,6 +10,7 @@ public static class DependencyInjection
         services.AddSingleton<IDealRepository, MockDealRepository>();
         services.AddSingleton<IMessageRepository, MockMessageRepository>();
         services.AddSingleton<IRequirementRepository, MockRequirementRepository>();
+        services.AddSingleton<IModuleRepository, MockModuleRepository>();
         return services;
     }
 }

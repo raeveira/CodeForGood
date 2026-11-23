@@ -1,0 +1,15 @@
+.UnauthorizedMain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(50vh - 70px);
+    gap: 0;
+}
+
+.UnauthorizedCard {
+    background-color: #d3d3d3;
+    border: 1px solid #7b7b7b;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}

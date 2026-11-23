@@ -4,11 +4,11 @@ using Application.Deals;
 
 namespace Infrastructure;
 
-public class MockRequirementRepository : IRequirementRepository
+public class MockRequirementRepository(IModuleRepository moduleRepository) : IRequirementRepository
 {
-    private static readonly List<Requirement> requirements = InitializeMockRequirements();
+    private readonly List<Requirement> requirements = InitializeMockRequirements(moduleRepository);
 
-    private static List<Requirement> InitializeMockRequirements()
+    private static List<Requirement> InitializeMockRequirements(IModuleRepository moduleRepository)
     {
         List<Requirement> mockRequirements = new();
         IDealRepository dealRepository = new MockDealRepository();
@@ -43,7 +43,7 @@ public class MockRequirementRepository : IRequirementRepository
         ERequirementType[] types = { ERequirementType.Functional, ERequirementType.Technical };
         ERequirementPriority[] priorities = { ERequirementPriority.High, ERequirementPriority.Medium, ERequirementPriority.Low };
 
-        string[] modules = { "Module 1", "Module 2", "Module 3", "Module 4", "Module 5" };
+        Guid[] modules = moduleRepository.GetAll().Select(module => module.Id).ToArray();
 
         for (int index = 0; index < 12; index++)
         {
@@ -52,10 +52,10 @@ public class MockRequirementRepository : IRequirementRepository
             ERequirementPriority randomPriority = priorities[random.Next(priorities.Length)];
             
             int moduleCount = random.Next(1, 4);
-            List<string> selectedModules = new();
+            List<Guid> selectedModules = new();
             for (int moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++)
             {
-                string selectedModule = modules[random.Next(modules.Length)];
+                Guid selectedModule = modules[random.Next(modules.Length)];
                 if (!selectedModules.Contains(selectedModule))
                 {
                     selectedModules.Add(selectedModule);

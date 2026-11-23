@@ -1,4 +1,5 @@
 @using Presentation.Models
+@using Application.Modules
 @model DealDetailsViewModel
 @{
     Guid dealId = Model.Deal.Id;
@@ -23,6 +24,8 @@
 {
     <partial name="_UpdateDealModal" model="Model" />
 }
+
+@* TODO: Implement deletion confirmation modal (for both deals and requirements) *@
 
 <div class="DealDetails">
     <div class="DealContent">
@@ -56,7 +59,7 @@
                             </div>
                             
                             <p class="RequirementModulesHeading">Bedrijfsmodule(s)</p>
-                            <p class="RequirementModules">@string.Join(", ", requirement.Modules)</p>
+                            <p class="RequirementModules">@string.Join(", ", requirement.Modules.Select(module => module.Name))</p>
                         </a>
                     }
                 </div>
@@ -154,7 +157,8 @@
         }
     </div>
 
-    <div class="DealInfo">
+    <div class="DealInfo @(selectedRequirement is not null ? "HasRequirement" : "")">
+      <div class="DealInfoSummary">
         <div class="ExtraInfo">
             <h3>Deal Information</h3>
              @if (User.IsInRole(role: "Sales"))
@@ -167,7 +171,7 @@
                 </div>                
             }
             <p><strong>Status:</strong> @Model.Deal.Status</p>
-            <p><strong>Expected end date:</strong> @Model.Deal.EndDate.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+            <p><strong>Estimated Deadline:</strong> @Model.Deal.EstimatedDeadline.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
             <p><strong>Created at:</strong> @Model.Deal.CreatedAt.ToString("HH:mm - dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
         </div>
         
@@ -183,6 +187,7 @@
             <strong>Description:</strong>
             <p>@Model.Deal.Description</p>
         </div>
+      </div>
 
         @if (selectedRequirement is not null)
         {
@@ -190,11 +195,11 @@
             <div class="RequirementModulesSection">
                 <h5><strong>Requirement Info:</strong></h5>
                 <p><strong>Deadline:</strong> @(selectedRequirement.Deadline?.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture) ?? "Not set")</p>
-                <div class="ModulesHeader">
+                <div class="RequirementModulesHeader">
                     <strong>Company Module(s):</strong>
                     @if (User.IsInRole("Developer"))
                     {
-                        <button type="button" class="AddModuleBtn" onclick="document.getElementById('addModuleModal').showModal()">+</button>
+                        <button type="button" class="AddModuleBtn" onclick="document.getElementById('addModuleModal').showModal()" aria-label="Add modules">+</button>
                     }
                 </div>
                     
@@ -202,14 +207,18 @@
                     @foreach (var module in selectedRequirement.Modules)
                     {
                         <div class="ModuleTag">
-                            <span>@module</span>
+                            <span class="RequirementModuleDetails">
+                                <span class="RequirementModuleName">@module.Name</span>
+                                <span class="RequirementModuleComplexityLabel">Integration complexity</span>
+                                <span class="RequirementModuleComplexity Complexity-@module.Complexity">@module.Complexity.ToLabel()</span>
+                            </span>
                             @if (User.IsInRole("Developer"))
                             {
                                 <form method="post" asp-action="RemoveModule" style="display: inline; margin-left: 0.5rem;">
                                     <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
                                     <input type="hidden" name="dealId" value="@dealId" />
-                                    <input type="hidden" name="module" value="@module" />
-                                    <button type="submit" class="RemoveModuleBtn" title="Remove module">×</button>
+                                    <input type="hidden" name="moduleId" value="@module.Id" />
+                                    <button type="submit" class="RemoveModuleBtn" aria-label="Remove @module.Name" title="Remove module">×</button>
                                 </form>
                             }
                         </div>
@@ -218,27 +227,47 @@
                 
                 @if (User.IsInRole(role: "Developer"))
                 {
-                    <dialog id="addModuleModal" class="Modal">
+                    var availableModules = Model.AvailableModules.Where(module => !selectedRequirement.Modules.Any(selected => selected.Id == module.Id)).ToList();
+                    @if (TempData["RequirementModuleError"] is string moduleError)
+                    {
+                        <p class="text-danger" role="alert">@moduleError</p>
+                    }
+                    <dialog id="addModuleModal" class="Modal ModulePickerModal" aria-labelledby="addModuleTitle">
                         <div class="ModalContent">
                             <div class="ModalHeader">
-                                <h3>Add New Module</h3>
-                                <button type="button" class="ModalCloseBtn" onclick="document.getElementById('addModuleModal').close()">×</button>
+                                <h3 id="addModuleTitle">Add modules</h3>
+                                <button type="button" class="ModalCloseBtn" onclick="document.getElementById('addModuleModal').close()" aria-label="Close">×</button>
                             </div>
-                            
-                            <form method="post" asp-action="AddModule" class="ModalForm">
-                                <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
-                                <input type="hidden" name="dealId" value="@dealId" />
-                                
-                                <div class="FormGroup">
-                                    <label for="moduleName">Module Name:</label>
-                                    <input type="text" id="moduleName" name="moduleName" placeholder="Enter module name..." class="FormInput" required />
-                                </div>
-                                
-                                <div class="ModalActions">
-                                    <button type="button" class="ModalBtn ModalCancelBtn" onclick="document.getElementById('addModuleModal').close()">Cancel</button>
-                                    <button type="submit" class="ModalBtn ModalSubmitBtn">Add Module</button>
-                                </div>
-                            </form>
+                            @if (availableModules.Count > 0)
+                            {
+                                <form method="post" asp-action="AddModule" class="ModalForm">
+                                    <input type="hidden" name="requirementId" value="@selectedRequirement.Id" />
+                                    <input type="hidden" name="dealId" value="@dealId" />
+                                    <fieldset>
+                                        <legend class="ModulePickerLegend">Select modules to add</legend>
+                                        <div class="ModulePickerList">
+                                            @foreach (var module in availableModules)
+                                            {
+                                                <label class="ModulePickerChoice">
+                                                    <input type="checkbox" name="moduleIds" value="@module.Id" />
+                                                    <span>
+                                                        <strong>@module.Name</strong>
+                                                        <span>Integration complexity: @module.Complexity.ToLabel()</span>
+                                                    </span>
+                                                </label>
+                                            }
+                                        </div>
+                                    </fieldset>
+                                    <div class="ModalActions">
+                                        <button type="button" class="ModalBtn ModalCancelBtn" onclick="document.getElementById('addModuleModal').close()">Cancel</button>
+                                        <button type="submit" class="ModalBtn ModalSubmitBtn">Add selected</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <p>No other modules available. <a asp-controller="Modules" asp-action="Index">Manage modules</a></p>
+                            }
                         </div>
                     </dialog>
                 }

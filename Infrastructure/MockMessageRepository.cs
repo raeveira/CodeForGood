@@ -4,14 +4,13 @@ using Application.Requirements;
 
 namespace Infrastructure;
 
-public class MockMessageRepository : IMessageRepository
+public class MockMessageRepository(IRequirementRepository requirementRepository) : IMessageRepository
 {
-    private static readonly List<Message> messages = InitializeMockMessages();
+    private readonly List<Message> messages = InitializeMockMessages(requirementRepository);
 
-    private static List<Message> InitializeMockMessages()
+    private static List<Message> InitializeMockMessages(IRequirementRepository requirementRepository)
     {
         List<Message> mockMessages = new();
-        IRequirementRepository requirementRepository = new MockRequirementRepository();
         IReadOnlyList<Requirement> requirements = requirementRepository.GetAll();
 
         Random random = new Random();

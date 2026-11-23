@@ -1,178 +1,7 @@
-/* LOGIN PAGE STYLES */
-.LoginMain {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.LoginModal {
-    background-color: white;
-    padding: 2rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-    min-width: 300px;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-    height: 50%;
-}
-
-.LoginHeading {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    width: 100%;
-    text-align: center;
-}
-
-.LoginSubheading {
-    font-size: 1rem;
-    color: #666;
-    margin-bottom: 2rem;
-    width: 100%;
-    text-align: center;
-}
-
-.LoginModal .LoginForm {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 1rem;
-    width: 100%;
-    height: 100%;
-}
-
-.LoginUsernameLabel {
-    font-weight: bold;
-    margin-bottom: -0.5rem;
-}
-
-.LoginUsernameGroup {
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
-}
-
-.LoginUsernameGroup input {
-    display: none;
-}
-
-.LoginUsernameGroup label {
-    flex: 1;
-    text-align: center;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.LoginUsernameGroup input:checked + label {
-    background-color: #646274;
-    border-color: #646274;
-    color: white;
-}
-
-.LoginPasswordLabel {
-    margin-top: 1rem;
-    font-weight: bold;
-    margin-bottom: -0.5rem;
-}
-
-.LoginPasswordInput {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
-
-.LoginPasswordInput:disabled {
-    background-color: #F2F2F2;
-    border: 1px solid #E6E6E6;
-}
-
-.LoginPasswordInput:disabled:hover{
-    cursor: not-allowed;
-}
-
-.LoginButton {
-    margin-top: 2rem;
-    width: 100%;
-    font-size: 1.25rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #646274;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.LoginButton:hover {
-    background-color: #50505a;
-}
-
-@media screen and (max-width: 768px) {
-    .LoginModal {
-        width: 80%;
-        height: auto;
-    }
-}
-
-/* HOME PAGE STYLES */
-
-.PageHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #646274;
-    padding: 0 2rem;
-    height: 70px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.HeaderLogo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.HeaderLogo h1 {
-    color: white;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-}
-
-.LogoutForm {
-    margin: 0;
-}
-
-.LogoutButton {
-    background-color: transparent;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
-}
-
-.LogoutButton:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
 .HomeMain {
     --sidebar-resize-handle-width: 2px;
     display: flex;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 90px);
     gap: 0;
 }
 
@@ -482,6 +311,24 @@
     overflow-y: auto;
     padding: 1.5rem;
     border-left: 1px solid #D9D9D9;
+}
+
+.DealInfo.HasRequirement {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.DealInfo.HasRequirement .DealInfoSummary {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 60%;
+    overflow-y: auto;
+}
+
+.DealInfo.HasRequirement > .Divider {
+    flex-shrink: 0;
 }
 
 .RequirementsListView {
@@ -947,10 +794,14 @@
 }
 
 .RequirementModulesSection {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
     font-size: 0.9rem;
 }
 
-.ModulesHeader {
+.RequirementModulesHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -963,19 +814,26 @@
     
     .ModulesList {
         display: flex;
-        flex-wrap: wrap;
+        flex: 1 1 auto;
+        flex-direction: column;
         gap: 0.5rem;
+        min-height: 0;
         margin-bottom: 0.75rem;
+        overflow-y: auto;
     }
     
     .ModuleTag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: #646274;
-        color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 16px;
+        display: flex;
+        flex-shrink: 0;
+        width: 100%;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.75rem;
+        background-color: white;
+        border: 1px solid #d9d8e2;
+        color: #292738;
+        padding: 0.75rem;
+        border-radius: 8px;
         font-size: 0.85rem;
         font-weight: 600;
     }
@@ -983,7 +841,7 @@
     .RemoveModuleBtn {
         background: none;
         border: none;
-        color: white;
+        color: #646274;
         cursor: pointer;
         font-size: 1.2rem;
         padding: 0;
@@ -994,6 +852,79 @@
     
     .RemoveModuleBtn:hover {
         opacity: 1;
+    }
+
+    .RequirementModuleDetails {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .RequirementModuleName {
+        font-size: 0.95rem;
+    }
+
+    .RequirementModuleComplexityLabel {
+        color: #666477;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-top: 0.55rem;
+    }
+
+    .RequirementModuleComplexity {
+        display: inline-block;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-top: 0.25rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .ModulePickerModal {
+        max-width: 500px;
+    }
+
+    .ModulePickerLegend {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .ModulePickerList {
+        display: grid;
+        gap: 0.5rem;
+        max-height: min(45vh, 300px);
+        overflow-y: auto;
+        padding: 0.25rem;
+    }
+
+    .ModulePickerChoice {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border: 1px solid #d9d9df;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .ModulePickerChoice:has(input:checked) {
+        background: #f0eff7;
+        border-color: #646274;
+    }
+
+    .ModulePickerChoice > span {
+        display: flex;
+        flex-direction: column;
+        overflow-wrap: anywhere;
+    }
+
+    .ModulePickerChoice > span > span {
+        color: #666477;
+        font-size: 0.8rem;
     }
     
     .AddModuleBtn {

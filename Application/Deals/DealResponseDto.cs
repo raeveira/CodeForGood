@@ -8,5 +8,5 @@ public sealed record DealResponseDto(
     string Status,
     string Description,
     DateTime CreatedAt,
-    DateOnly EndDate
+    DateOnly EstimatedDeadline
 );

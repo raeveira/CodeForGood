@@ -1,0 +1,98 @@
+@using Application.Modules
+@model ModulesViewModel
+@{
+    ViewData["Title"] = "Code for Good - Modules";
+}
+
+<main class="ModulesMain">
+    <div class="ModulesContainer">
+        <div class="ModulesHeader">
+            <div>
+                <p class="ModulesEyebrow">Developer workspace</p>
+                <h2>Modules</h2>
+                <p>Manage reusable modules and see what it takes to integrate them.</p>
+            </div>
+            <button type="button" class="ModulePrimaryButton" data-bs-toggle="modal" data-bs-target="#moduleModal" data-module-create>+ New module</button>
+        </div>
+
+        @if (TempData["ModuleMessage"] is string message)
+        {
+            <div class="ModuleNotice" role="status">@message</div>
+        }
+        @if (TempData["ModuleError"] is string error)
+        {
+            <div class="ModuleError" role="alert">@error</div>
+        }
+
+        @if (Model.Modules.Count == 0)
+        {
+            <div class="ModulesEmpty">
+                <h3>No modules yet</h3>
+                <p>Add your first module to start building your library.</p>
+            </div>
+        }
+        else
+        {
+            <div class="ModulesGrid">
+                @foreach (Module module in Model.Modules)
+                {
+                    <article class="ModuleCard">
+                        <div>
+                            <p class="ModuleCardLabel">Module</p>
+                            <h3>@module.Name</h3>
+                        </div>
+                        <div class="ModuleComplexity">
+                            <span>Integration</span>
+                            <strong class="ComplexityBadge Complexity-@module.Complexity">@module.Complexity.ToLabel()</strong>
+                        </div>
+                        <div class="ModuleActions">
+                            <button type="button" class="ModuleSecondaryButton" data-bs-toggle="modal" data-bs-target="#moduleModal"
+                                    data-module-edit data-name="@module.Name" data-complexity="@((int)module.Complexity)"
+                                    data-action="@Url.Action("Edit", "Modules", new { id = module.Id })">Edit</button>
+                            <form method="post" asp-action="Delete" asp-route-id="@module.Id" class="ModuleDeleteForm" data-name="@module.Name">
+                                <button type="submit" class="ModuleDeleteButton">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</main>
+
+<div class="modal fade" id="moduleModal" tabindex="-1" aria-labelledby="moduleModalTitle" aria-hidden="true"
+     data-show-modal="@Model.ShowModal.ToString().ToLowerInvariant()"
+     data-create-action="@Url.Action("Create", "Modules")">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ModuleModal">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="moduleModalTitle">@(Model.EditingId.HasValue ? "Edit module" : "New module")</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="@(Model.EditingId.HasValue ? Url.Action("Edit", "Modules", new { id = Model.EditingId }) : Url.Action("Create", "Modules"))">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div asp-validation-summary="All" class="ModuleValidation" role="alert"></div>
+                    <label asp-for="Form.Name" class="ModuleFieldLabel">Name</label>
+                    <input asp-for="Form.Name" class="form-control" maxlength="100" required />
+                    <label asp-for="Form.Complexity" class="ModuleFieldLabel">Integration complexity</label>
+                    <select asp-for="Form.Complexity" class="form-select" required>
+                        <option value="">Choose how it integrates</option>
+                        <option value="@((int)EIntegrationComplexity.PlugAndPlay)">Plug and play</option>
+                        <option value="@((int)EIntegrationComplexity.ConfigurationNeeded)">Configuration needed</option>
+                        <option value="@((int)EIntegrationComplexity.CustomIntegration)">Custom integration</option>
+                    </select>
+                    <p class="ModuleHelp">Plug and play: ready to use. Configuration needed: requires setup. Custom integration: requires development work.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="ModuleSecondaryButton" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="ModulePrimaryButton" id="moduleSubmit">@(Model.EditingId.HasValue ? "Save changes" : "Create module")</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modules.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,223 @@
+.ModulesMain {
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    background: #f5f5f8;
+    padding: 3rem 2rem;
+}
+
+.ModulesContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ModulesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.ModulesHeader h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 .4rem;
+    color: #292738;
+}
+
+.ModulesHeader p {
+    color: #666477;
+    margin: 0;
+}
+
+.ModulesHeader .ModulesEyebrow {
+    color: #625e83;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .5rem;
+}
+
+.ModulePrimaryButton,
+.ModuleSecondaryButton,
+.ModuleDeleteButton {
+    border-radius: 6px;
+    padding: .6rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ModulePrimaryButton {
+    background: #625e83;
+    border: 1px solid #625e83;
+    color: white;
+}
+
+.ModulePrimaryButton:hover {
+    background: #4e4a6c;
+}
+
+.ModuleSecondaryButton {
+    background: white;
+    border: 1px solid #cbc9d4;
+    color: #39374a;
+}
+
+.ModuleSecondaryButton:hover {
+    background: #f5f5f8;
+}
+
+.ModuleDeleteButton {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #a13240;
+}
+
+.ModuleDeleteButton:hover {
+    background: #fff1f2;
+}
+
+.ModuleNotice {
+    background: #e7f4ed;
+    color: #225b3c;
+    padding: .8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.ModuleError {
+    background: #fbe8e9;
+    color: #913744;
+    padding: .8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.ModulesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1rem;
+}
+
+.ModuleCard,
+.ModulesEmpty {
+    background: white;
+    border: 1px solid #e3e2e9;
+    border-radius: 10px;
+    padding: 1.4rem;
+}
+
+.ModuleCard {
+    display: flex;
+    flex-direction: column;
+    min-height: 210px;
+}
+
+.ModuleCardLabel,
+.ModuleComplexity>span {
+    color: #777586;
+    font-size: .8rem;
+    font-weight: 600;
+    margin: 0 0 .4rem;
+}
+
+.ModuleCard h3 {
+    color: #292738;
+    font-size: 1.2rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.ModuleComplexity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 1rem 0;
+}
+
+.ComplexityBadge {
+    border-radius: 20px;
+    font-size: .8rem;
+    padding: .3rem .65rem;
+}
+
+.Complexity-PlugAndPlay {
+    background: #e5f4eb;
+    color: #23613f;
+}
+
+.Complexity-ConfigurationNeeded {
+    background: #fff3d9;
+    color: #795512;
+}
+
+.Complexity-CustomIntegration {
+    background: #fbe8e9;
+    color: #913744;
+}
+
+.ModuleActions {
+    border-top: 1px solid #eeedf1;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding-top: 1rem;
+    margin-top: auto;
+}
+
+.ModuleActions form {
+    margin: 0;
+}
+
+.ModulesEmpty {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #666477;
+}
+
+.ModulesEmpty h3 {
+    color: #292738;
+    font-size: 1.2rem;
+}
+
+.ModuleModal {
+    border: 0;
+    border-radius: 10px;
+}
+
+.ModuleFieldLabel {
+    display: block;
+    font-weight: 600;
+    margin: 0 0 .4rem;
+}
+
+.ModuleFieldLabel:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.ModuleHelp {
+    color: #666477;
+    font-size: .85rem;
+    margin: .75rem 0 0;
+}
+
+.ModuleValidation {
+    color: #a13240;
+}
+
+.ModuleValidation:empty,
+.ModuleValidation ul:empty {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .ModulesMain {
+        padding: 2rem 1rem;
+    }
+
+    .ModulesHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

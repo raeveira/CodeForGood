@@ -7,7 +7,7 @@
     string title = hasEdits ? TempData["DealTitle"] as string ?? "" : deal.Title;
     string description = hasEdits ? TempData["DealDescription"] as string ?? "" : deal.Description;
     string customer = hasEdits ? TempData["DealCustomer"] as string ?? "" : deal.Customer;
-    string endDate = hasEdits ? TempData["DealEndDate"] as string ?? "" : deal.EndDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    string EstimatedDeadline = hasEdits ? TempData["DealEstimatedDeadline"] as string ?? "" : deal.EstimatedDeadline.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
 }
 
 <div class="update-deal-modal">
@@ -44,8 +44,8 @@
             </div>
             
             <div class="FormGroup">
-                <label for="dealEndDate">Expected End Date:</label>
-                <input type="date" id="dealEndDate" name="endDate" value="@endDate" class="FormInput" required />
+                <label for="dealEstimatedDeadline">Estimated Deadline:</label>
+                <input type="date" id="dealEstimatedDeadline" name="EstimatedDeadline" value="@EstimatedDeadline" class="FormInput" required />
             </div>
             
             <div class="ModalActions">

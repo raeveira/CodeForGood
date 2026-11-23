@@ -1,5 +1,6 @@
 using Application.Deals;
 using Application.Messages;
+using Application.Modules;
 using Application.Requirements;
 
 namespace Presentation.Models;
@@ -13,7 +14,8 @@ public record HomeViewModel(
     IReadOnlyList<DealSortOption> SortOptions,
     string ActiveSort,
     IReadOnlyDictionary<Guid, AttentionInfo> DealAttention,
-    IReadOnlyDictionary<Guid, AttentionInfo> RequirementAttention
+    IReadOnlyDictionary<Guid, AttentionInfo> RequirementAttention,
+    IReadOnlyList<Module> AvailableModules
 );
 
 

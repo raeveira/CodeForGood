@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using Application;
 using Application.Deals;
 using Application.Messages;
 using Application.Requirements;
@@ -16,12 +17,14 @@ public class HomeController : Controller
     private readonly IDealCollection dealCollection;
     private readonly IRequirementCollection requirementCollection;
     private readonly IMessageCollection messageCollection;
+    private readonly IModuleRepository moduleRepository;
 
-    public HomeController(IDealCollection dealCollection, IRequirementCollection requirementCollection, IMessageCollection messageCollection)
+    public HomeController(IDealCollection dealCollection, IRequirementCollection requirementCollection, IMessageCollection messageCollection, IModuleRepository moduleRepository)
     {
         this.dealCollection = dealCollection;
         this.requirementCollection = requirementCollection;
         this.messageCollection = messageCollection;
+        this.moduleRepository = moduleRepository;
     }
 
     public IActionResult Index(Guid? dealId, Guid? requirementId, bool showCreateDealModal = false, bool showCreateRequirementModal = false, bool showUpdateRequirementModal = false,     bool showUpdateDealModal = false, string? sort = null)
@@ -82,7 +85,8 @@ public class HomeController : Controller
             sortOptions,
             activeSort.Key,
             dealAttention,
-            requirementAttention
+            requirementAttention,
+            moduleRepository.GetAll()
         );
 
         return View(viewModel);
@@ -148,41 +152,35 @@ public class HomeController : Controller
 
     [HttpPost]
     [Authorize(Roles = "Developer")]
-    public IActionResult AddModule(Guid dealId, Guid requirementId, string moduleName)
+    [ValidateAntiForgeryToken]
+    public IActionResult AddModule(Guid dealId, Guid requirementId, List<Guid> moduleIds)
     {
-        if (string.IsNullOrWhiteSpace(moduleName))
+        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+            return NotFound();
+
+        if (!ModelState.IsValid || moduleIds.Count == 0 || moduleIds.Any(id => moduleRepository.GetById(id) is null))
         {
+            TempData["RequirementModuleError"] = "Select one or more valid modules from the module library.";
             return RedirectToAction("Index", new { dealId, requirementId });
         }
 
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        if (requirement is not null)
-        {
-            List<string> modules = new List<string>(requirement.Modules)
-            {
-                moduleName.Trim()
-            };
-            requirementCollection.UpdateRequirement(requirementId, requirement.Title, requirement.Description, Enum.Parse<ERequirementType>(requirement.Type), Enum.Parse<ERequirementPriority>(requirement.Priority), modules);
-        }
-
+        requirementCollection.UpdateModules(requirementId, requirement.Modules.Select(module => module.Id).Concat(moduleIds));
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
     [HttpPost]
     [Authorize(Roles = "Developer")]
-    public IActionResult RemoveModule(Guid dealId, Guid requirementId, string module)
+    [ValidateAntiForgeryToken]
+    public IActionResult RemoveModule(Guid dealId, Guid requirementId, Guid moduleId)
     {
         RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        if (requirement is not null)
-        {
-            List<string> modules = requirement.Modules.Where(m => m != module).ToList();
+        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+            return NotFound();
+        if (!requirement.Modules.Any(module => module.Id == moduleId))
+            return NotFound();
 
-            if (modules.Count > 0)
-            {
-                requirementCollection.UpdateRequirement(requirementId, requirement.Title, requirement.Description, Enum.Parse<ERequirementType>(requirement.Type), Enum.Parse<ERequirementPriority>(requirement.Priority), modules);
-            }
-        }
-
+        requirementCollection.UpdateModules(requirementId, requirement.Modules.Where(module => module.Id != moduleId).Select(module => module.Id));
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -212,15 +210,15 @@ public class HomeController : Controller
     [HttpPost]
     [Authorize(Roles = "Sales")]
     [ValidateAntiForgeryToken]
-    public IActionResult CreateDeal(string title, string customer, string description, DateOnly endDate, Guid? dealId, Guid? requirementId)
+    public IActionResult CreateDeal(string title, string customer, string description, DateOnly EstimatedDeadline, Guid? dealId, Guid? requirementId)
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(customer) || string.IsNullOrWhiteSpace(description) || endDate == default)
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(customer) || string.IsNullOrWhiteSpace(description) || EstimatedDeadline == default)
         {
             TempData["CreateDealError"] = "All fields are required and the end date must be valid.";
             return RedirectToAction("Index", new { dealId, requirementId, showCreateDealModal = true });
         }
 
-        dealCollection.Create(title.Trim(), customer.Trim(), description.Trim(), endDate);
+        dealCollection.Create(title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -243,19 +241,19 @@ public class HomeController : Controller
     [HttpPost]
     [Authorize(Roles = "Sales")]
     [ValidateAntiForgeryToken]
-    public IActionResult UpdateDeal(Guid dealId, Guid? requirementId, string title, string customer, string description, DateOnly endDate)
+    public IActionResult UpdateDeal(Guid dealId, Guid? requirementId, string title, string customer, string description, DateOnly EstimatedDeadline)
     {
-        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(customer) || string.IsNullOrWhiteSpace(description) || endDate == default)
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(customer) || string.IsNullOrWhiteSpace(description) || EstimatedDeadline == default)
         {
             TempData["UpdateDealError"] = "All fields are required and the end date must be valid.";
             TempData["DealTitle"] = title;
             TempData["DealCustomer"] = customer;
             TempData["DealDescription"] = description;
-            TempData["DealEndDate"] = endDate.ToString("yyyy-MM-dd");
+            TempData["DealEstimatedDeadline"] = EstimatedDeadline.ToString("yyyy-MM-dd");
             return RedirectToAction("Index", new { dealId, requirementId, showUpdateDealModal = true });
         }
 
-        dealCollection.UpdateDealDetails(dealId, title.Trim(), customer.Trim(), description.Trim(), endDate);
+        dealCollection.UpdateDealDetails(dealId, title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -294,9 +292,6 @@ public class HomeController : Controller
             return NotFound();
         }
 
-        // Only developers can add modules, so for sales we initialize an empty list.
-        List<string> moduleList = new List<string>();
-
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description)
             || !Enum.TryParse(type, out ERequirementType requirementType) || !Enum.IsDefined(requirementType)
             || !Enum.TryParse(priority, out ERequirementPriority requirementPriority) || !Enum.IsDefined(requirementPriority)
@@ -310,7 +305,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, showCreateRequirementModal = true });
         }
 
-        requirementCollection.CreateRequirement(dealId, title.Trim(), description.Trim(), requirementType, requirementPriority, moduleList);
+        requirementCollection.CreateRequirement(dealId, title.Trim(), description.Trim(), requirementType, requirementPriority);
         return RedirectToAction("Index", new { dealId });
     }
 
@@ -366,9 +361,6 @@ public class HomeController : Controller
             return NotFound();
         }
 
-        // Sales is not allowed to modify modules directly, so we keep the existing list.
-        List<string> modules = requirement.Modules.ToList();
-
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description)
             || !Enum.TryParse(type, out ERequirementType requirementType) || !Enum.IsDefined(requirementType)
             || !Enum.TryParse(priority, out ERequirementPriority requirementPriority) || !Enum.IsDefined(requirementPriority)
@@ -382,7 +374,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId, showUpdateRequirementModal = true });
         }
 
-        requirementCollection.UpdateRequirement(requirementId, title.Trim(), description.Trim(), requirementType, requirementPriority, modules);
+        requirementCollection.UpdateRequirement(requirementId, title.Trim(), description.Trim(), requirementType, requirementPriority);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 }

@@ -30,8 +30,8 @@ public sealed class DealSortOption
                 .OrderBy(deal => StatusRank(deal.Status))),
             new("Created date", "created-desc", "Newest first", deals => deals.OrderByDescending(deal => deal.CreatedAt)),
             new("Created date", "created-asc", "Oldest first", deals => deals.OrderBy(deal => deal.CreatedAt)),
-            new("Expected end date", "end-asc", "Soonest first", deals => deals.OrderBy(deal => deal.EndDate)),
-            new("Expected end date", "end-desc", "Latest first", deals => deals.OrderByDescending(deal => deal.EndDate)),
+            new("Estimated Deadline", "end-asc", "Soonest first", deals => deals.OrderBy(deal => deal.EstimatedDeadline)),
+            new("Estimated Deadline", "end-desc", "Latest first", deals => deals.OrderByDescending(deal => deal.EstimatedDeadline)),
             new("Title", "title", "A-Z", deals => deals.OrderBy(deal => deal.Title, StringComparer.OrdinalIgnoreCase))
         ];
 
