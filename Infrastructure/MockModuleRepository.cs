@@ -6,7 +6,7 @@ namespace Infrastructure;
 public sealed class MockModuleRepository : IModuleRepository
 {
     private readonly Dictionary<Guid, Module> modules = Enumerable.Range(1, 5)
-        .Select(index => new Module(Guid.NewGuid(), $"Module {index}", EIntegrationComplexity.ConfigurationNeeded))
+        .Select(index => Module.Create($"Module {index}", EIntegrationComplexity.ConfigurationNeeded))
         .ToDictionary(module => module.Id);
     private readonly Lock sync = new();
 

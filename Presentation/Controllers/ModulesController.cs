@@ -8,10 +8,14 @@ namespace Presentation.Controllers;
 
 [Authorize(Roles = "Developer")]
 [Route("modules")]
-public class ModulesController(IModuleRepository repository, IRequirementRepository requirementRepository) : Controller
+public class ModulesController(ModuleService moduleService) : Controller
 {
     [HttpGet("")]
-    public IActionResult Index() => View(new ModulesViewModel { Modules = repository.GetAll() });
+    public IActionResult Index()
+    {
+        IReadOnlyList<Module> modules = moduleService.GetAll();
+        return View(new ModulesViewModel { Modules = modules });
+    }
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
@@ -20,7 +24,7 @@ public class ModulesController(IModuleRepository repository, IRequirementReposit
         if (!ModelState.IsValid)
             return View("Index", Page(input));
 
-        repository.Add(new Module(Guid.NewGuid(), input.Name!.Trim(), input.Complexity!.Value));
+        moduleService.Add(input.Name!.Trim(), input.Complexity!.Value);
         TempData["ModuleMessage"] = "Module created.";
         return RedirectToAction(nameof(Index));
     }
@@ -29,14 +33,13 @@ public class ModulesController(IModuleRepository repository, IRequirementReposit
     [ValidateAntiForgeryToken]
     public IActionResult Edit(Guid id, [Bind(Prefix = "Form")] ModuleInput input)
     {
-        if (repository.GetById(id) is null)
+        if (moduleService.GetById(id) is null)
             return NotFound();
 
         if (!ModelState.IsValid)
             return View("Index", Page(input, id));
 
-        if (!repository.Update(new Module(id, input.Name!.Trim(), input.Complexity!.Value)))
-            return NotFound();
+        moduleService.Update(id, input.Name!.Trim(), input.Complexity!.Value);
 
         TempData["ModuleMessage"] = "Module updated.";
         return RedirectToAction(nameof(Index));
@@ -46,16 +49,17 @@ public class ModulesController(IModuleRepository repository, IRequirementReposit
     [ValidateAntiForgeryToken]
     public IActionResult Delete(Guid id)
     {
-        if (repository.GetById(id) is null)
+        if (moduleService.GetById(id) is null)
             return NotFound();
-        if (requirementRepository.GetAll().Any(requirement => requirement.ModuleIds.Contains(id)))
+        try
         {
-            TempData["ModuleError"] = "This module is assigned to a requirement. Remove it from all requirements before deleting it.";
+            moduleService.Delete(id);
+        }
+        catch (Exception ex)
+        {
+            TempData["ModuleError"] = ex.Message;
             return RedirectToAction(nameof(Index));
         }
-
-        if (!repository.Remove(id))
-            return NotFound();
 
         TempData["ModuleMessage"] = "Module deleted.";
         return RedirectToAction(nameof(Index));
@@ -63,7 +67,7 @@ public class ModulesController(IModuleRepository repository, IRequirementReposit
 
     private ModulesViewModel Page(ModuleInput input, Guid? id = null) => new()
     {
-        Modules = repository.GetAll(),
+        Modules = moduleService.GetAll(),
         Form = input,
         EditingId = id,
         ShowModal = true
