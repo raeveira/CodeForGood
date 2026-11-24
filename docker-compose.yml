@@ -1,0 +1,38 @@
+
+services:
+  presentation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: CodeForGood-presentation
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=CodeForGood;Username=postgres;Password=TestPasswordChangeThis"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: CodeForGood-postgres
+    environment:
+      POSTGRES_DB: CodeForGood
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: TestPasswordChangeThis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d CodeForGood"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
