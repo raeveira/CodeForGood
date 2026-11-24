@@ -18,11 +18,12 @@
 <body style="overflow: hidden;">
     @* header *@
     <header class="PageHeader">
-        <div class="HeaderLogo">
-            <img src="~/images/codeforgood.svg" alt="Code for Good Logo" style="height: 60px;" />
-            <h1>Code for Good</h1>
-        </div>
-        
+        <a href="/" class="HeaderLogoLink">
+            <div class="HeaderLogo">
+                <img src="~/images/codeforgood.svg" alt="Code for Good Logo" style="height: 60px;" />
+                <h1>Code for Good</h1>
+            </div>
+        </a>
         @if(User.Identity?.IsAuthenticated == true && User.IsInRole(role: "Developer"))
         {
             <div class="HeaderRole">

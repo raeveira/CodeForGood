@@ -8,7 +8,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(o =>
     {
         o.LoginPath = "/login";
-        o.AccessDeniedPath = "/access-denied";
+        o.AccessDeniedPath = "/unauthorized";
     });
 
 // Add services to the container.

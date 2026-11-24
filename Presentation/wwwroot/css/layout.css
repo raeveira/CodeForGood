@@ -48,6 +48,9 @@
   cursor: pointer;
 }
 
+.HeaderLogoLink {
+  text-decoration: none;
+}
 .HeaderLogo {
     display: flex;
     align-items: center;
