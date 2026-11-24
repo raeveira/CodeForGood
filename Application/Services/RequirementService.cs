@@ -2,7 +2,7 @@ using Application.Requirements;
 
 namespace Application.Requirements;
 
-internal sealed class RequirementCollection(IRequirementRepository requirementRepository, IModuleRepository moduleRepository) : IRequirementCollection
+internal sealed class RequirementService(IRequirementRepository requirementRepository, IModuleRepository moduleRepository) : IRequirementService
 {
     public IReadOnlyList<RequirementResponseDto> GetRequirementsForDeal(Guid dealId)
     {

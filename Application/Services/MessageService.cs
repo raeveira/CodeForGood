@@ -1,6 +1,6 @@
 namespace Application.Messages;
 
-internal sealed class MessageCollection(IMessageRepository messageRepository) : IMessageCollection
+internal sealed class MessageService(IMessageRepository messageRepository) : IMessageService
 {
     public IReadOnlyList<MessageResponseDto> GetMessagesForRequirement(Guid requirementId)
     {

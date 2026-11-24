@@ -1,7 +1,7 @@
 
 namespace Application.Deals;
 
-internal sealed class DealCollection(IDealRepository dealRepository) : IDealCollection
+internal sealed class DealService(IDealRepository dealRepository) : IDealService
 {
     public IReadOnlyList<DealResponseDto> GetAll()
     {
@@ -103,13 +103,13 @@ internal sealed class DealCollection(IDealRepository dealRepository) : IDealColl
     {
         string statusDisplay = deal.Status switch
         {
-            DealStatus.TalkingStage => "Talking Stage",
-            DealStatus.DiscussionStage => "Discussion Stage",
-            DealStatus.OpenForDevelopment => "Open for Development",
-            DealStatus.InDevelopment => "In Development",
-            DealStatus.AwaitingApproval => "Awaiting Approval",
-            DealStatus.Completed => "Completed",
-            DealStatus.Archived => "Archived",
+            EDealStatus.TalkingStage => "Talking Stage",
+            EDealStatus.DiscussionStage => "Discussion Stage",
+            EDealStatus.OpenForDevelopment => "Open for Development",
+            EDealStatus.InDevelopment => "In Development",
+            EDealStatus.AwaitingApproval => "Awaiting Approval",
+            EDealStatus.Completed => "Completed",
+            EDealStatus.Archived => "Archived",
             _ => deal.Status.ToString()
         };
 

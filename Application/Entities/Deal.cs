@@ -8,7 +8,7 @@ public sealed class Deal
     public string Customer { get; private set; }
     public string Description { get; private set; }
     public DateOnly EstimatedDeadline { get; private set; }
-    public DealStatus Status { get; private set; }
+    public EDealStatus Status { get; private set; }
     public DateTime CreatedAt { get; }
 
     private Deal(string title, string customer, string description, DateOnly estimatedDeadline)
@@ -18,7 +18,7 @@ public sealed class Deal
         Customer = customer;
         Description = description;
         EstimatedDeadline = estimatedDeadline;
-        Status = DealStatus.TalkingStage;
+        Status = EDealStatus.TalkingStage;
         CreatedAt = DateTime.Now;
     }
 
@@ -36,7 +36,7 @@ public sealed class Deal
 
     public void UpdateDetails(string title, string customer, string description, DateOnly estimatedDeadline)
     {
-        if (Status == DealStatus.Completed)
+        if (Status == EDealStatus.Completed)
             throw new InvalidOperationException("A completed deal cannot be changed.");
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("A deal needs a title.");
@@ -51,49 +51,49 @@ public sealed class Deal
 
     public void StartProgress()
     {
-        if (Status != DealStatus.TalkingStage)
+        if (Status != EDealStatus.TalkingStage)
             throw new InvalidOperationException("Only a deal in the talking stage can be started.");
 
-        Status = DealStatus.DiscussionStage;
+        Status = EDealStatus.DiscussionStage;
     }
 
     public void Complete()
     {
-        if (Status != DealStatus.DiscussionStage)
+        if (Status != EDealStatus.DiscussionStage)
             throw new InvalidOperationException("Only a deal in the discussion stage can be completed.");
 
-        Status = DealStatus.OpenForDevelopment;
+        Status = EDealStatus.OpenForDevelopment;
     }
 
     public void StartDevelopment()
     {
-        if (Status != DealStatus.OpenForDevelopment)
+        if (Status != EDealStatus.OpenForDevelopment)
             throw new InvalidOperationException("Only a deal open for development can be started.");
 
-        Status = DealStatus.InDevelopment;
+        Status = EDealStatus.InDevelopment;
     }
 
     public void CompleteDevelopment()
     {
-        if (Status != DealStatus.InDevelopment)
+        if (Status != EDealStatus.InDevelopment)
             throw new InvalidOperationException("Only a deal in development can be completed.");
 
-        Status = DealStatus.AwaitingApproval;
+        Status = EDealStatus.AwaitingApproval;
     }
 
     public void Approve()
     {
-        if (Status != DealStatus.AwaitingApproval)
+        if (Status != EDealStatus.AwaitingApproval)
             throw new InvalidOperationException("Only a deal awaiting approval can be approved.");
 
-        Status = DealStatus.Completed;
+        Status = EDealStatus.Completed;
     }
 
     public void Archive()
     {
-        if (Status != DealStatus.Completed)
+        if (Status != EDealStatus.Completed)
             throw new InvalidOperationException("Only a completed deal can be archived.");
 
-        Status = DealStatus.Archived;
+        Status = EDealStatus.Archived;
     }
 }

@@ -1,6 +1,6 @@
 namespace Application.Deals;
 
-public enum DealStatus
+public enum EDealStatus
 {
     TalkingStage,
     DiscussionStage,

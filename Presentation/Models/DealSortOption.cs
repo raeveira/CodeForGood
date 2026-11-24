@@ -35,7 +35,7 @@ public sealed class DealSortOption
             new("Title", "title", "A-Z", deals => deals.OrderBy(deal => deal.Title, StringComparer.OrdinalIgnoreCase))
         ];
 
-        foreach (DealStatus status in Enum.GetValues<DealStatus>())
+        foreach (EDealStatus status in Enum.GetValues<EDealStatus>())
         {
             string name = status.ToString();
             options.Add(new("Show status first", $"first-{name}", Humanize(name), deals => deals
@@ -53,7 +53,7 @@ public sealed class DealSortOption
 
     private static int StatusRank(string status)
     {
-        int index = Array.FindIndex(Enum.GetNames<DealStatus>(), name => name == Normalize(status));
+        int index = Array.FindIndex(Enum.GetNames<EDealStatus>(), name => name == Normalize(status));
         return index < 0 ? int.MaxValue : index;
     }
 }

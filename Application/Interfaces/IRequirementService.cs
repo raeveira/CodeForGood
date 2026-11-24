@@ -1,6 +1,6 @@
 namespace Application.Requirements;
 
-public interface IRequirementCollection
+public interface IRequirementService
 {
     IReadOnlyList<RequirementResponseDto> GetRequirementsForDeal(Guid dealId);
     RequirementResponseDto? GetRequirementById(Guid requirementId);

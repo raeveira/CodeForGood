@@ -14,16 +14,16 @@ namespace Presentation.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
-    private readonly IDealCollection dealCollection;
-    private readonly IRequirementCollection requirementCollection;
-    private readonly IMessageCollection messageCollection;
+    private readonly IDealService dealService;
+    private readonly IRequirementService requirementService;
+    private readonly IMessageService messageService;
     private readonly IModuleRepository moduleRepository;
 
-    public HomeController(IDealCollection dealCollection, IRequirementCollection requirementCollection, IMessageCollection messageCollection, IModuleRepository moduleRepository)
+    public HomeController(IDealService dealService, IRequirementService requirementService, IMessageService messageService, IModuleRepository moduleRepository)
     {
-        this.dealCollection = dealCollection;
-        this.requirementCollection = requirementCollection;
-        this.messageCollection = messageCollection;
+        this.dealService = dealService;
+        this.requirementService = requirementService;
+        this.messageService = messageService;
         this.moduleRepository = moduleRepository;
     }
 
@@ -34,36 +34,36 @@ public class HomeController : Controller
         ViewData["ShowCreateRequirementModal"] = showCreateRequirementModal && User.IsInRole("Sales");
         ViewData["ShowUpdateRequirementModal"] = showUpdateRequirementModal && requirementId is not null && User.IsInRole("Sales");
 
-        DealResponseDto? selectedDeal = dealId is null ? null : dealCollection.GetById(dealId.Value);
+        DealResponseDto? selectedDeal = dealId is null ? null : dealService.GetById(dealId.Value);
 
         IReadOnlyList<RequirementResponseDto> requirementsForDeal = selectedDeal is null
             ? new List<RequirementResponseDto>()
-            : requirementCollection.GetRequirementsForDeal(selectedDeal.Id);
+            : requirementService.GetRequirementsForDeal(selectedDeal.Id);
 
         RequirementResponseDto? selectedRequirement = requirementId is null
             ? null
-            : requirementCollection.GetRequirementById(requirementId.Value);
+            : requirementService.GetRequirementById(requirementId.Value);
 
         if (selectedRequirement is not null && selectedRequirement.DealId != selectedDeal?.Id)
             return NotFound();
 
         IReadOnlyList<MessageResponseDto> messagesForRequirement = selectedRequirement is null
             ? new List<MessageResponseDto>()
-            : messageCollection.GetMessagesForRequirement(selectedRequirement.Id);
+            : messageService.GetMessagesForRequirement(selectedRequirement.Id);
 
         IReadOnlyList<DealSortOption> sortOptions = DealSortOption.GetAll();
         string? requestedSort = sort ?? Request.Cookies["dealSort"];
         DealSortOption activeSort = sortOptions.FirstOrDefault(option => option.Key == requestedSort) ?? sortOptions[0];
-        IReadOnlyList<DealResponseDto> deals = dealCollection.GetAll();
+        IReadOnlyList<DealResponseDto> deals = dealService.GetAll();
         Dictionary<Guid, AttentionInfo> dealAttention = new();
         Dictionary<Guid, AttentionInfo> requirementAttention = new();
         foreach (DealResponseDto deal in deals)
         {
             List<string> dealEvents = [$"deal:{deal.Id}"];
             bool dealPending = false;
-            foreach (RequirementResponseDto requirement in requirementCollection.GetRequirementsForDeal(deal.Id))
+            foreach (RequirementResponseDto requirement in requirementService.GetRequirementsForDeal(deal.Id))
             {
-                IReadOnlyList<MessageResponseDto> messages = messageCollection.GetMessagesForRequirement(requirement.Id);
+                IReadOnlyList<MessageResponseDto> messages = messageService.GetMessagesForRequirement(requirement.Id);
                 List<string> events = [$"requirement:{requirement.Id}"];
                 events.AddRange(messages
                     .Where(message => !string.Equals(message.Author, User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
@@ -96,8 +96,8 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult SendMessage(Guid dealId, Guid requirementId, string messageText)
     {
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+        RequirementResponseDto? requirement = requirementService.GetRequirementById(requirementId);
+        if (dealService.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
             return NotFound();
 
         if (string.IsNullOrWhiteSpace(messageText))
@@ -117,11 +117,11 @@ public class HomeController : Controller
                 TempData["ChatError"] = "Developers can request a future or current date using /deadline YYYY-MM-DD.";
                 return RedirectToAction("Index", new { dealId, requirementId });
             }
-            messageCollection.SendDeadlineRequest(requirementId, author, deadline);
+            messageService.SendDeadlineRequest(requirementId, author, deadline);
         }
         else
         {
-            messageCollection.SendMessage(requirementId, author, text);
+            messageService.SendMessage(requirementId, author, text);
         }
 
         return RedirectToAction("Index", new { dealId, requirementId });
@@ -132,9 +132,9 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult AdaptDeadline(Guid dealId, Guid requirementId, Guid messageId)
     {
-        DealResponseDto? deal = dealCollection.GetById(dealId);
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        MessageResponseDto? message = messageCollection.GetMessageById(messageId);
+        DealResponseDto? deal = dealService.GetById(dealId);
+        RequirementResponseDto? requirement = requirementService.GetRequirementById(requirementId);
+        MessageResponseDto? message = messageService.GetMessageById(messageId);
         if (deal is null || requirement is null || requirement.DealId != dealId || message is null || message.RequirementId != requirementId)
             return NotFound();
         if (message.RequestedDeadline is not DateOnly deadline || message.DeadlineAdapted
@@ -144,9 +144,9 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId });
         }
 
-        dealCollection.UpdateDealDetails(dealId, deal.Title, deal.Customer, deal.Description, deadline);
-        requirementCollection.UpdateDeadline(requirementId, deadline);
-        messageCollection.AdaptDeadlineRequest(messageId);
+        dealService.UpdateDealDetails(dealId, deal.Title, deal.Customer, deal.Description, deadline);
+        requirementService.UpdateDeadline(requirementId, deadline);
+        messageService.AdaptDeadlineRequest(messageId);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -155,8 +155,8 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult AddModule(Guid dealId, Guid requirementId, List<Guid> moduleIds)
     {
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+        RequirementResponseDto? requirement = requirementService.GetRequirementById(requirementId);
+        if (dealService.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
             return NotFound();
 
         if (!ModelState.IsValid || moduleIds.Count == 0 || moduleIds.Any(id => moduleRepository.GetById(id) is null))
@@ -165,7 +165,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId });
         }
 
-        requirementCollection.UpdateModules(requirementId, requirement.Modules.Select(module => module.Id).Concat(moduleIds));
+        requirementService.UpdateModules(requirementId, requirement.Modules.Select(module => module.Id).Concat(moduleIds));
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -174,13 +174,13 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult RemoveModule(Guid dealId, Guid requirementId, Guid moduleId)
     {
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
-        if (dealCollection.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
+        RequirementResponseDto? requirement = requirementService.GetRequirementById(requirementId);
+        if (dealService.GetById(dealId) is null || requirement is null || requirement.DealId != dealId)
             return NotFound();
         if (!requirement.Modules.Any(module => module.Id == moduleId))
             return NotFound();
 
-        requirementCollection.UpdateModules(requirementId, requirement.Modules.Where(module => module.Id != moduleId).Select(module => module.Id));
+        requirementService.UpdateModules(requirementId, requirement.Modules.Where(module => module.Id != moduleId).Select(module => module.Id));
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -218,7 +218,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId, showCreateDealModal = true });
         }
 
-        dealCollection.Create(title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
+        dealService.Create(title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -253,7 +253,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId, showUpdateDealModal = true });
         }
 
-        dealCollection.UpdateDealDetails(dealId, title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
+        dealService.UpdateDealDetails(dealId, title.Trim(), customer.Trim(), description.Trim(), EstimatedDeadline);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 
@@ -262,7 +262,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteDeal(Guid dealId)
     {
-        dealCollection.DeleteDeal(dealId);
+        dealService.DeleteDeal(dealId);
         return RedirectToAction("Index", new { dealId });
     }
 
@@ -287,7 +287,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult CreateRequirement(string title, string description, string type, string priority, Guid dealId)
     {
-        if (dealCollection.GetById(dealId) is null)
+        if (dealService.GetById(dealId) is null)
         {
             return NotFound();
         }
@@ -305,7 +305,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, showCreateRequirementModal = true });
         }
 
-        requirementCollection.CreateRequirement(dealId, title.Trim(), description.Trim(), requirementType, requirementPriority);
+        requirementService.CreateRequirement(dealId, title.Trim(), description.Trim(), requirementType, requirementPriority);
         return RedirectToAction("Index", new { dealId });
     }
 
@@ -314,17 +314,17 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult DeleteRequirement(Guid dealId, Guid requirementId)
     {
-        if (dealCollection.GetById(dealId) is null)
+        if (dealService.GetById(dealId) is null)
         {
             return NotFound();
         }
 
-        if (requirementCollection.GetRequirementById(requirementId) is null)
+        if (requirementService.GetRequirementById(requirementId) is null)
         {
             return NotFound();
         }
 
-        requirementCollection.DeleteRequirement(requirementId);
+        requirementService.DeleteRequirement(requirementId);
         return RedirectToAction("Index", new { dealId });
     }
 
@@ -349,12 +349,12 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult UpdateRequirement(Guid dealId, Guid requirementId, string title, string description, string type, string priority)
     {
-        if (dealCollection.GetById(dealId) is null)
+        if (dealService.GetById(dealId) is null)
         {
             return NotFound();
         }
 
-        RequirementResponseDto? requirement = requirementCollection.GetRequirementById(requirementId);
+        RequirementResponseDto? requirement = requirementService.GetRequirementById(requirementId);
 
         if (requirement is null)
         {
@@ -374,7 +374,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", new { dealId, requirementId, showUpdateRequirementModal = true });
         }
 
-        requirementCollection.UpdateRequirement(requirementId, title.Trim(), description.Trim(), requirementType, requirementPriority);
+        requirementService.UpdateRequirement(requirementId, title.Trim(), description.Trim(), requirementType, requirementPriority);
         return RedirectToAction("Index", new { dealId, requirementId });
     }
 }

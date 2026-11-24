@@ -1,6 +1,6 @@
 namespace Application.Messages;
 
-public interface IMessageCollection
+public interface IMessageService
 {
     IReadOnlyList<MessageResponseDto> GetMessagesForRequirement(Guid requirementId);
     MessageResponseDto? GetMessageById(Guid messageId);

@@ -1,6 +1,6 @@
 namespace Application.Deals;
 
-public interface IDealCollection
+public interface IDealService
 {
     IReadOnlyList<DealResponseDto> GetAll();
     DealResponseDto? GetById(Guid id);

@@ -80,7 +80,7 @@
                             <span>Select / unselect all</span>
                         </label>
                         <div class="SortChoices">
-                            @foreach (string statusName in Enum.GetNames<DealStatus>())
+                            @foreach (string statusName in Enum.GetNames<EDealStatus>())
                             {
                                 <label class="SortChoice">
                                     <input type="checkbox" class="StatusFilter" value="@statusName" checked />
